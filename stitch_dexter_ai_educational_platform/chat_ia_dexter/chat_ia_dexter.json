@@ -1,0 +1,109 @@
+{
+  "folder_name": "chat_ia_dexter",
+  "title": "Chat Dexter",
+  "screen_type": "AI conversation UI",
+  "design_language": "dark chat dashboard",
+  "theme": "midnight navy",
+  "variant": "dark default",
+  "files": [
+    "screen.png"
+  ],
+  "content_summary": "Interface de chat principal sombre avec historique de conversation, réponses structurées de l'assistant et zone de saisie.",
+  "layout": [
+    "sidebar navigation",
+    "conversation header",
+    "assistant answer block",
+    "composer bar"
+  ],
+  "dominant_colors": [
+    "#040d1a",
+    "#0d1728",
+    "#1a2438",
+    "#7c5cf5",
+    "#7dd5ff"
+  ],
+  "ui_elements": [
+    "assistant avatar",
+    "chat bubbles",
+    "input box",
+    "send action"
+  ],
+  "reproduction_spec": {
+    "source": {
+      "screenshot": "screen.png",
+      "markup": null,
+      "design_reference": null,
+      "source_role": "authoritative visual reference"
+    },
+    "viewport": {
+      "width_px": 1440,
+      "height_px": 1024,
+      "device_scale_factor": 1,
+      "orientation": "landscape",
+      "responsive_rule": "reproduce the desktop composition before adapting it"
+    },
+    "page_shell": {
+      "sidebar_width_px": 280,
+      "content_max_width_px": 1000,
+      "content_left_offset_px": 280,
+      "page_padding_px": 24,
+      "grid_columns": 12,
+      "grid_gutter_px": 24,
+      "spacing_base_px": 8
+    },
+    "design_tokens": {
+      "font_family": "Inter",
+      "font_source": "Google Fonts: Inter weights 400, 500, 600, 700",
+      "background": "#0B0E14",
+      "surface": "#111827",
+      "surface_secondary": "#1E293B",
+      "text_primary": "#E4E1EE",
+      "text_secondary": "#C7C4D8",
+      "border": "#1F2937",
+      "primary": "#C3C0FF",
+      "primary_container": "#4F46E5",
+      "accent_gradient": "linear-gradient(135deg, #C3C0FF 0%, #FFB695 100%)",
+      "card_radius_px": 18,
+      "control_radius_px": 12,
+      "pill_radius_px": 9999,
+      "glass_background": "rgba(17, 24, 39, 0.70)",
+      "glass_blur_px": 16,
+      "border_width_px": 1
+    },
+    "component_tree": [
+      {"id": "app", "type": "page", "children": ["sidebar", "chat_stage"]},
+      {"id": "sidebar", "type": "fixed_navigation", "width_px": 280, "position": "left"},
+      {"id": "chat_stage", "type": "main_content", "children": ["conversation_header", "message_thread", "composer"]},
+      {"id": "conversation_header", "type": "header"},
+      {"id": "message_thread", "type": "conversation_list"},
+      {"id": "composer", "type": "chat_input"}
+    ],
+    "typography": [
+      {"role": "page_title", "font_family": "Inter", "font_size_px": 32, "font_weight": 600, "line_height_px": 40},
+      {"role": "body", "font_family": "Inter", "font_size_px": 16, "font_weight": 400, "line_height_px": 24},
+      {"role": "label", "font_family": "Inter", "font_size_px": 14, "font_weight": 500, "line_height_px": 20},
+      {"role": "caption", "font_family": "Inter", "font_size_px": 12, "font_weight": 600, "line_height_px": 16}
+    ],
+    "visible_content": {
+      "language": "fr",
+      "text_policy": "preserve exact wording, accents, capitalization and line breaks from the screenshot",
+      "required_labels": ["Accueil", "Recherche", "Chat", "Mes matières", "Historique", "Profil", "Paramètres", "Upgrade to Pro"]
+    },
+    "effects": {
+      "background": "solid midnight base",
+      "glass_panels": "rgba(17,24,39,0.70) with backdrop-filter blur(16px)",
+      "card_hover": "border rgba(195,192,255,0.50) and shadow 0 0 15px rgba(195,192,255,0.10)",
+      "focus": "1px primary border with matching focus ring",
+      "icons": "Material Symbols Outlined, 24px, rounded visual weight"
+    },
+    "states_visible_in_reference": ["default", "active navigation", "assistant response", "composer ready"],
+    "fidelity_rules": [
+      "Do not substitute the font family or icon set.",
+      "Keep the sidebar fixed at 280px on the reference viewport.",
+      "Preserve the 8px spacing rhythm and the 12-column grid.",
+      "Use the screenshot as the final authority for visual placement when metadata and implementation differ.",
+      "Validate the recreation with a same-viewport screenshot comparison."
+    ]
+  },
+  "notes": "Generated from visual analysis of the provided Dexter screen variations."
+}

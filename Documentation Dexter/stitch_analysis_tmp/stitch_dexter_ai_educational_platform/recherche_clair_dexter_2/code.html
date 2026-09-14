@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+
+<html lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dexter - Recherche</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "text-primary": "#0F172A",
+                      "on-tertiary-fixed": "#351000",
+                      "surface-bright": "#faf8ff",
+                      "on-secondary-fixed": "#25005a",
+                      "surface-variant": "#dae2fd",
+                      "gradient-end": "#8B5CF6",
+                      "on-surface": "#131b2e",
+                      "secondary-fixed-dim": "#d2bbff",
+                      "on-primary-fixed": "#0f0069",
+                      "on-primary-fixed-variant": "#3323cc",
+                      "text-tertiary": "#94A3B8",
+                      "domain-green": "#10B981",
+                      "primary-fixed-dim": "#c3c0ff",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-tinted": "#F8F7FF",
+                      "surface-subtle": "#F1F0FB",
+                      "secondary": "#712ae2",
+                      "primary-fixed": "#e2dfff",
+                      "on-primary-container": "#dad7ff",
+                      "on-primary": "#ffffff",
+                      "text-secondary": "#475569",
+                      "inverse-surface": "#283044",
+                      "outline-variant": "#c7c4d8",
+                      "on-secondary-fixed-variant": "#5a00c6",
+                      "surface-tint": "#4d44e3",
+                      "primary": "#3525cd",
+                      "surface-container-high": "#e2e7ff",
+                      "secondary-fixed": "#eaddff",
+                      "surface-dim": "#d2d9f4",
+                      "background": "#faf8ff",
+                      "tertiary-container": "#a44100",
+                      "domain-orange": "#F59E0B",
+                      "tertiary-fixed": "#ffdbcc",
+                      "on-secondary-container": "#fffbff",
+                      "error": "#ba1a1a",
+                      "gradient-start": "#3B82F6",
+                      "inverse-primary": "#c3c0ff",
+                      "primary-container": "#4f46e5",
+                      "surface": "#faf8ff",
+                      "surface-base": "#FFFFFF",
+                      "inverse-on-surface": "#eef0ff",
+                      "on-error": "#ffffff",
+                      "surface-container": "#eaedff",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-fixed-dim": "#ffb695",
+                      "domain-blue": "#0EA5E9",
+                      "tertiary": "#7e3000",
+                      "error-container": "#ffdad6",
+                      "on-tertiary-fixed-variant": "#7b2f00",
+                      "surface-container-low": "#f2f3ff",
+                      "secondary-container": "#8a4cfc",
+                      "outline": "#777587",
+                      "on-surface-variant": "#464555",
+                      "on-background": "#131b2e",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-container": "#ffd2be",
+                      "on-error-container": "#93000a",
+                      "surface-container-highest": "#dae2fd"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px",
+                      "2xl": "1.25rem"
+              },
+              "spacing": {
+                      "max_width": "1440px",
+                      "xl": "64px",
+                      "xs": "4px",
+                      "base": "8px",
+                      "margin": "32px",
+                      "sm": "12px",
+                      "gutter": "24px",
+                      "lg": "40px",
+                      "md": "24px"
+              },
+              "fontFamily": {
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        /* Custom styles for subtle effects */
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid #E2E8F0;
+        }
+        .bento-card {
+            background-color: #ffffff;
+            border: 1px solid #F1F5F9;
+            border-radius: 1.25rem;
+            transition: all 0.2s ease;
+        }
+        .bento-card:hover {
+            border-color: #3525cd; /* primary */
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.04);
+            transform: translateY(-2px);
+        }
+        
+        /* Hide scrollbar for horizontal scroll */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(to right, #3B82F6, #8B5CF6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+    </style>
+</head>
+<body class="bg-background text-text-primary font-body-md font-body-md min-h-screen flex flex-col md:flex-row antialiased selection:bg-primary-container selection:text-on-primary-container">
+<!-- Mobile Top App Bar (Hidden on md+) -->
+<header class="md:hidden flex items-center justify-between p-4 bg-surface-container-lowest z-10 sticky top-0 shadow-sm shadow-black/[0.02]">
+<div class="flex items-center gap-sm">
+<img alt="Dexter AI Logo" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4HLlaa6LfUq-gzaRX95sce2CKDgWZkeFB0WokEH7UIG9Kohe1ZdCJTvr-2xC6DH2gHXVTdDLZXUOjsq5oqeAgv6nTn_kdZ4sdhE2Xh89ohkrmq9i3iYSwoZVsKBltSFhTKoXfuwuZqhdS-23cluSfQ1Jlxt56q4rMCWoKxvgcRAgLqBUFctn-uelMBoXtrfT0uuffgx9y1GE3JgOLmOk7qyTZGS_kuwSNTRqUnceZWiRPEfXPEXwI8Q-cxHAHzxO4Moo"/>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-text-primary tracking-tight">Dexter</h1>
+</div>
+<button class="text-text-secondary p-2 hover:bg-surface-subtle rounded-full transition-colors">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+</header>
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden md:flex flex-col h-screen w-[280px] fixed left-0 top-0 bg-surface-container-lowest dark:bg-surface-dim border-r border-outline-variant dark:border-outline p-6 justify-between z-20">
+<div>
+<!-- Brand Area -->
+<div class="flex items-center gap-sm mb-lg px-2">
+<img alt="Dexter AI Logo" class="w-10 h-10 rounded-xl object-cover shadow-sm" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD8zZagd4tAqoCcqF0qTSmUhc68dchn9DnS5tkpMK6h_NmgddJ8V1IYqALZhwfF46aO90VBH3uA5RY3hs6a_Zy3ofZf1gwQAYDTnWAG9DGY9EbiAJy2kso6w1YlOm_2Ss8MN7SVIlX_CGF_2S243nS_0u7gpsMAMBQUMEetAXRlHxbwvTJEO_HkuvmTtXr3JUSmB4KhFWUGmGBHei40npfQrRKWYKtJP7sUdDMwaEOKOlNCrW630pRi15wckc0koa8rqZo"/>
+<div>
+<div class="font-headline-md text-headline-md font-bold text-text-primary dark:text-on-surface tracking-tight">Dexter</div>
+<div class="font-label-sm text-label-sm text-text-secondary">Study Assistant</div>
+</div>
+</div>
+<!-- Navigation Links -->
+<ul class="space-y-xs font-body-md text-body-md">
+<li>
+<a class="flex items-center gap-sm px-4 py-3 rounded-xl text-text-secondary dark:text-on-surface-variant hover:bg-surface-subtle dark:hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span>Accueil</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-4 py-3 rounded-xl text-primary dark:text-primary-fixed font-bold bg-surface-subtle dark:bg-surface-container-high transition-transform duration-150 scale-95 origin-left" href="#">
+<span class="material-symbols-outlined" data-icon="search" data-weight="fill" style="font-variation-settings: 'FILL' 1;">search</span>
+<span>Recherche</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-4 py-3 rounded-xl text-text-secondary dark:text-on-surface-variant hover:bg-surface-subtle dark:hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="chat_bubble">chat_bubble</span>
+<span>Chat</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-4 py-3 rounded-xl text-text-secondary dark:text-on-surface-variant hover:bg-surface-subtle dark:hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>
+<span>Mes matières</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-4 py-3 rounded-xl text-text-secondary dark:text-on-surface-variant hover:bg-surface-subtle dark:hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span>Historique</span>
+</a>
+</li>
+</ul>
+</div>
+<div>
+<div class="h-px w-full bg-outline-variant/30 my-4"></div>
+<ul class="space-y-xs font-body-md text-body-md mb-4">
+<li>
+<a class="flex items-center gap-sm px-4 py-3 rounded-xl text-text-secondary dark:text-on-surface-variant hover:bg-surface-subtle dark:hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span>Profil</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-sm px-4 py-3 rounded-xl text-text-secondary dark:text-on-surface-variant hover:bg-surface-subtle dark:hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span>Paramètres</span>
+</a>
+</li>
+</ul>
+<button class="w-full bg-gradient-to-r from-gradient-start to-gradient-end text-on-primary font-label-md text-label-md py-3 rounded-xl shadow-[inset_0_2px_4px_rgba(255,255,255,0.3)] hover:opacity-90 transition-opacity flex justify-center items-center gap-2">
+<span class="material-symbols-outlined text-[18px]" data-icon="bolt">bolt</span>
+                Upgrade to Pro
+            </button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-[280px] w-full max-w-[1440px] mx-auto p-4 md:p-margin pb-24 md:pb-margin relative min-h-screen">
+<!-- Search Bar Section -->
+<section class="max-w-3xl mx-auto mt-8 md:mt-16 mb-lg">
+<h2 class="font-display-lg text-display-lg text-center mb-md tracking-tight">Que cherchez-vous <span class="gradient-text">aujourd'hui?</span></h2>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-text-tertiary group-focus-within:text-primary transition-colors" data-icon="search">search</span>
+</div>
+<input class="w-full bg-surface-subtle border-none rounded-2xl py-4 pl-12 pr-12 font-body-lg text-body-lg text-text-primary placeholder:text-text-tertiary focus:ring-1 focus:ring-primary focus:bg-surface-container-lowest transition-all shadow-[0_0_0_1px_transparent] focus:shadow-[0_0_0_1px_rgba(53,37,205,0.2),0_4px_20px_-4px_rgba(53,37,205,0.1)] outline-none" placeholder="Posez une question, cherchez un sujet..." type="text"/>
+<div class="absolute inset-y-0 right-0 pr-2 flex items-center">
+<button class="p-2 rounded-xl text-text-secondary hover:text-primary hover:bg-surface-variant transition-colors" title="Recherche vocale">
+<span class="material-symbols-outlined" data-icon="mic">mic</span>
+</button>
+</div>
+</div>
+<!-- Filter Chips -->
+<div class="flex flex-wrap items-center justify-center gap-2 mt-6">
+<button class="px-4 py-1.5 rounded-full bg-surface-subtle border border-outline-variant/50 font-label-sm text-label-sm text-text-secondary hover:border-primary hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="science">science</span> Physique
+                </button>
+<button class="px-4 py-1.5 rounded-full bg-surface-subtle border border-outline-variant/50 font-label-sm text-label-sm text-text-secondary hover:border-primary hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="functions">functions</span> Mathématiques
+                </button>
+<button class="px-4 py-1.5 rounded-full bg-surface-subtle border border-outline-variant/50 font-label-sm text-label-sm text-text-secondary hover:border-primary hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="biotech">biotech</span> Biologie
+                </button>
+<button class="px-4 py-1.5 rounded-full bg-surface-subtle border border-outline-variant/50 font-label-sm text-label-sm text-text-secondary hover:border-primary hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="history_edu">history_edu</span> Histoire
+                </button>
+</div>
+</section>
+<!-- Recent Searches (Horizontal Scroll) -->
+<section class="mb-xl max-w-5xl mx-auto">
+<div class="flex items-center justify-between mb-md px-2">
+<h3 class="font-headline-md text-headline-md text-text-primary">Recherches récentes</h3>
+<button class="font-label-sm text-label-sm text-primary hover:underline">Tout voir</button>
+</div>
+<div class="flex overflow-x-auto gap-4 pb-4 hide-scrollbar px-2 snap-x">
+<!-- Card 1 -->
+<div class="min-w-[280px] bento-card p-4 flex flex-col gap-3 snap-start cursor-pointer group">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-full bg-domain-blue/10 flex items-center justify-center text-domain-blue">
+<span class="material-symbols-outlined" data-icon="functions">functions</span>
+</div>
+<span class="font-label-sm text-label-sm text-text-tertiary">Il y a 2h</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-text-primary group-hover:text-primary transition-colors line-clamp-1">Dérivées partielles</h4>
+<p class="font-body-md text-sm text-text-secondary line-clamp-2 mt-1">Explication et exemples d'application en thermodynamique.</p>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="min-w-[280px] bento-card p-4 flex flex-col gap-3 snap-start cursor-pointer group">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-full bg-domain-orange/10 flex items-center justify-center text-domain-orange">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+</div>
+<span class="font-label-sm text-label-sm text-text-tertiary">Hier</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-text-primary group-hover:text-primary transition-colors line-clamp-1">Révolution Industrielle</h4>
+<p class="font-body-md text-sm text-text-secondary line-clamp-2 mt-1">Impact socio-économique en Europe au 19ème siècle.</p>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="min-w-[280px] bento-card p-4 flex flex-col gap-3 snap-start cursor-pointer group">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-full bg-domain-green/10 flex items-center justify-center text-domain-green">
+<span class="material-symbols-outlined" data-icon="biotech">biotech</span>
+</div>
+<span class="font-label-sm text-label-sm text-text-tertiary">Mar. 14</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-text-primary group-hover:text-primary transition-colors line-clamp-1">Mitose vs Méiose</h4>
+<p class="font-body-md text-sm text-text-secondary line-clamp-2 mt-1">Tableau comparatif détaillé des phases cellulaires.</p>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="min-w-[280px] bento-card p-4 flex flex-col gap-3 snap-start cursor-pointer group">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+</div>
+<span class="font-label-sm text-label-sm text-text-tertiary">Lun. 13</span>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-text-primary group-hover:text-primary transition-colors line-clamp-1">Biais Cognitifs</h4>
+<p class="font-body-md text-sm text-text-secondary line-clamp-2 mt-1">Liste des principaux biais de confirmation dans la recherche.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Popular Topics (Bento Grid) -->
+<section class="max-w-5xl mx-auto mb-lg">
+<div class="flex items-center gap-2 mb-md px-2">
+<span class="material-symbols-outlined text-primary" data-icon="trending_up">trending_up</span>
+<h3 class="font-headline-md text-headline-md text-text-primary">Sujets populaires</h3>
+</div>
+<!-- Bento Layout -->
+<div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 px-2 auto-rows-[160px]">
+<!-- Large Feature Cell -->
+<div class="md:col-span-2 lg:col-span-2 row-span-2 bento-card relative overflow-hidden group cursor-pointer p-6 flex flex-col justify-end">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover opacity-10 group-hover:opacity-20 transition-opacity duration-500" data-alt="A macro shot of a complex 3D molecular structure glowing with a soft blue and purple light mode aesthetic, set against a pristine white background. High technological clarity, depth of field." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC53d5VBOGWWGpNJCQ8fIhQtjQVv2WnPdBw7qmfeqxDTok7iMp2CyyM0LFhVML8-yxSvhO0HYRh1aK4FI60_Cr6xDeO9NRz80a6TZNezLx9wqo6bJ2KS6iXZ1jXGxHS-bqA_jD0vPBeY1frRn15dg1AmHhFkGeP0FnRr4yMePcSBfiPMlEw68Xm0rKsV8y-Sr-NXb4lwDJ_-CPjXwvSx9jzQ2UmuVxX1S3Ft6WRtvlUewVdeJ_HbqGrIA"/>
+<div class="absolute inset-0 bg-gradient-to-t from-surface-base via-surface-base/80 to-transparent"></div>
+</div>
+<div class="relative z-10 flex flex-col h-full justify-between">
+<div class="self-start px-3 py-1 bg-surface-subtle rounded-full border border-outline-variant/30 flex items-center gap-1.5 mb-4">
+<div class="w-2 h-2 rounded-full bg-primary"></div>
+<span class="font-label-sm text-label-sm text-text-primary">Tendance #1</span>
+</div>
+<div>
+<h4 class="font-headline-lg text-headline-lg text-text-primary mb-2 group-hover:text-primary transition-colors">Mécanique Quantique</h4>
+<p class="font-body-md text-text-secondary mb-4 max-w-md">Introduction aux concepts fondamentaux, de l'équation de Schrödinger au principe d'incertitude.</p>
+<div class="flex items-center text-primary font-label-md text-label-md gap-1 group-hover:gap-2 transition-all">
+                                Explorer le sujet <span class="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Medium Cell 1 -->
+<div class="md:col-span-1 lg:col-span-2 row-span-1 bento-card p-5 cursor-pointer group flex flex-col justify-between hover:bg-surface-tinted">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-domain-green" data-icon="language">language</span>
+<span class="font-label-sm text-label-sm text-domain-green uppercase tracking-wider">Géographie</span>
+</div>
+<span class="material-symbols-outlined text-text-tertiary group-hover:text-primary transition-colors" data-icon="open_in_new">open_in_new</span>
+</div>
+<div>
+<h4 class="font-headline-md text-headline-md text-text-primary line-clamp-1">Changement Climatique</h4>
+<p class="font-body-md text-sm text-text-secondary line-clamp-1 mt-1">Analyse des données IPCC 2024</p>
+</div>
+</div>
+<!-- Medium Cell 2 -->
+<div class="md:col-span-1 lg:col-span-1 row-span-1 bento-card p-5 cursor-pointer group flex flex-col justify-between hover:bg-surface-tinted">
+<div class="flex justify-between items-start mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-domain-orange" data-icon="menu_book">menu_book</span>
+<span class="font-label-sm text-label-sm text-domain-orange uppercase tracking-wider">Littérature</span>
+</div>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-text-primary font-semibold line-clamp-2">Le Réalisme Français du 19e</h4>
+</div>
+</div>
+<!-- Small Cell 3 -->
+<div class="md:col-span-1 lg:col-span-1 row-span-1 bento-card p-5 cursor-pointer group flex flex-col justify-center items-center text-center hover:border-primary">
+<div class="w-12 h-12 rounded-full bg-surface-subtle flex items-center justify-center text-primary mb-3 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined" data-icon="explore">explore</span>
+</div>
+<span class="font-label-md text-label-md text-text-primary">Parcourir plus de sujets</span>
+</div>
+</div>
+</section>
+</main>
+<!-- Mobile Bottom Nav Bar (Hidden on md+) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-lowest/90 backdrop-blur-md border-t border-outline-variant/30 z-20 pb-safe">
+<ul class="flex justify-around items-center h-16 px-2">
+<li>
+<a class="flex flex-col items-center justify-center w-16 h-full text-text-secondary hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1 text-[24px]" data-icon="home">home</span>
+<span class="text-[10px] font-medium leading-none">Accueil</span>
+</a>
+</li>
+<li>
+<a class="flex flex-col items-center justify-center w-16 h-full text-primary" href="#">
+<div class="bg-surface-container-high px-4 py-1 rounded-full mb-1">
+<span class="material-symbols-outlined text-[24px]" data-icon="search" data-weight="fill" style="font-variation-settings: 'FILL' 1;">search</span>
+</div>
+<span class="text-[10px] font-bold leading-none">Recherche</span>
+</a>
+</li>
+<li>
+<a class="flex flex-col items-center justify-center w-16 h-full text-text-secondary hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1 text-[24px]" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-[10px] font-medium leading-none">Chat</span>
+</a>
+</li>
+<li>
+<a class="flex flex-col items-center justify-center w-16 h-full text-text-secondary hover:text-primary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1 text-[24px]" data-icon="person">person</span>
+<span class="text-[10px] font-medium leading-none">Profil</span>
+</a>
+</li>
+</ul>
+</nav>
+<!-- Safe area padding for mobile -->
+<style>
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .pb-safe {
+                padding-bottom: env(safe-area-inset-bottom);
+            }
+        }
+    </style>
+</body></html>

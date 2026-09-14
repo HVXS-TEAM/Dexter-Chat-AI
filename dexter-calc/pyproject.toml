@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=42"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dexter-calc"
+version = "0.1.0"
+description = "Calculs financiers et comptables pour Dexter Chat AI"
+authors = [{name = "Edwin Jamel Kouokam", email = "edwin.jamel@example.com"}]
+
+[project.scripts]
+dexter-calc = "app.cli:app"
+
+[project.optional-dependencies]
+dev = ["pytest"]
+
+[tool.setuptools.packages.find]
+include = ["dexter_calc*"]
+exclude = ["app*", "tests*"]

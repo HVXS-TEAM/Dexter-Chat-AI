@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+
+<html class="light" lang="fr"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dexter - Accueil</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "text-primary": "#0F172A",
+                      "on-tertiary-fixed": "#351000",
+                      "surface-bright": "#faf8ff",
+                      "on-secondary-fixed": "#25005a",
+                      "surface-variant": "#dae2fd",
+                      "gradient-end": "#8B5CF6",
+                      "on-surface": "#131b2e",
+                      "secondary-fixed-dim": "#d2bbff",
+                      "on-primary-fixed": "#0f0069",
+                      "on-primary-fixed-variant": "#3323cc",
+                      "text-tertiary": "#94A3B8",
+                      "domain-green": "#10B981",
+                      "primary-fixed-dim": "#c3c0ff",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-tinted": "#F8F7FF",
+                      "surface-subtle": "#F1F0FB",
+                      "secondary": "#712ae2",
+                      "primary-fixed": "#e2dfff",
+                      "on-primary-container": "#dad7ff",
+                      "on-primary": "#ffffff",
+                      "text-secondary": "#475569",
+                      "inverse-surface": "#283044",
+                      "outline-variant": "#c7c4d8",
+                      "on-secondary-fixed-variant": "#5a00c6",
+                      "surface-tint": "#4d44e3",
+                      "primary": "#3525cd",
+                      "surface-container-high": "#e2e7ff",
+                      "secondary-fixed": "#eaddff",
+                      "surface-dim": "#d2d9f4",
+                      "background": "#faf8ff",
+                      "tertiary-container": "#a44100",
+                      "domain-orange": "#F59E0B",
+                      "tertiary-fixed": "#ffdbcc",
+                      "on-secondary-container": "#fffbff",
+                      "error": "#ba1a1a",
+                      "gradient-start": "#3B82F6",
+                      "inverse-primary": "#c3c0ff",
+                      "primary-container": "#4f46e5",
+                      "surface": "#faf8ff",
+                      "surface-base": "#FFFFFF",
+                      "inverse-on-surface": "#eef0ff",
+                      "on-error": "#ffffff",
+                      "surface-container": "#eaedff",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-fixed-dim": "#ffb695",
+                      "domain-blue": "#0EA5E9",
+                      "tertiary": "#7e3000",
+                      "error-container": "#ffdad6",
+                      "on-tertiary-fixed-variant": "#7b2f00",
+                      "surface-container-low": "#f2f3ff",
+                      "secondary-container": "#8a4cfc",
+                      "outline": "#777587",
+                      "on-surface-variant": "#464555",
+                      "on-background": "#131b2e",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-container": "#ffd2be",
+                      "on-error-container": "#93000a",
+                      "surface-container-highest": "#dae2fd"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "max_width": "1440px",
+                      "xl": "64px",
+                      "xs": "4px",
+                      "base": "8px",
+                      "margin": "32px",
+                      "sm": "12px",
+                      "gutter": "24px",
+                      "lg": "40px",
+                      "md": "24px"
+              },
+              "fontFamily": {
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff; /* Base Canvas */
+        }
+        
+        .glass-card {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid #E2E8F0;
+        }
+
+        .primary-gradient-btn {
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            box-shadow: inset 0px 2px 4px rgba(255,255,255,0.3);
+        }
+
+        .search-bar-focus:focus-within {
+            border: 1px solid transparent;
+            background-image: linear-gradient(#F1F0FB, #F1F0FB), linear-gradient(135deg, #3B82F6, #8B5CF6);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+        }
+        
+        /* Sidebar layout styling from JSON */
+        .sidebar-container {
+             width: 280px;
+        }
+        @media (max-width: 1023px) {
+            .sidebar-container {
+                width: 80px;
+            }
+            .sidebar-text {
+                display: none;
+            }
+            .sidebar-logo-text {
+                display: none;
+            }
+        }
+        @media (max-width: 767px) {
+            .sidebar-container {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body class="flex min-h-screen text-text-primary antialiased bg-surface-container-lowest">
+<!-- SideNavBar (from JSON) -->
+<nav class="sidebar-container hidden md:flex flex-col h-screen fixed left-0 top-0 bg-surface-container-lowest border-r border-outline-variant p-6 justify-between z-10 transition-all duration-300">
+<div class="flex flex-col gap-8">
+<!-- Header -->
+<div class="flex items-center gap-3">
+<img alt="Dexter AI Logo" class="w-10 h-10 rounded-xl object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXqywbMaldcGJDN_eF3IrTMRJ_5C05kT460QgV_iU5sWkTJyfauivQH1hgxvAS3avql6iBs5CWpgQPLmQ1DJuUUVmSvr7Za1dZ7jKveAOrssrdr96Ss8DDJfTbM4k6SSh6eF5BPLxXQae4L62ja9XTrZnyURgibTagK8Y5ey3ZaZLkar9HSvXEw3YGHgYIKS2tT3RzV0H3fwIWY3I4SFoC_H72jOSggNGkIbg9tCGIddvBbhMjJY9Pd1SfkgCB1kmm-bk"/>
+<div class="sidebar-logo-text flex flex-col">
+<span class="font-headline-md text-headline-md font-bold text-text-primary">Dexter</span>
+<span class="font-label-sm text-label-sm text-text-secondary">Study Assistant</span>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex flex-col gap-2 font-body-md text-body-md">
+<a class="flex items-center gap-3 p-3 rounded-xl text-primary font-bold bg-surface-subtle transition-transform duration-150 group" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="sidebar-text">Accueil</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-xl text-text-secondary hover:bg-surface-subtle hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined">search</span>
+<span class="sidebar-text">Recherche</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-xl text-text-secondary hover:bg-surface-subtle hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined">chat_bubble</span>
+<span class="sidebar-text">Chat</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-xl text-text-secondary hover:bg-surface-subtle hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined">auto_stories</span>
+<span class="sidebar-text">Mes matières</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-xl text-text-secondary hover:bg-surface-subtle hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="sidebar-text">Historique</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-xl text-text-secondary hover:bg-surface-subtle hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="sidebar-text">Profil</span>
+</a>
+<a class="flex items-center gap-3 p-3 rounded-xl text-text-secondary hover:bg-surface-subtle hover:text-primary transition-colors duration-200 group" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="sidebar-text">Paramètres</span>
+</a>
+</div>
+</div>
+<!-- CTA -->
+<button class="primary-gradient-btn text-on-primary font-label-md text-label-md py-3 px-4 rounded-xl sidebar-text w-full transition-transform hover:scale-[1.02]">
+            Upgrade to Pro
+        </button>
+<button class="md:hidden lg:hidden primary-gradient-btn text-on-primary p-3 rounded-xl mx-auto flex items-center justify-center">
+<span class="material-symbols-outlined">rocket_launch</span>
+</button>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-[80px] lg:ml-[280px] p-4 md:p-margin flex flex-col items-center w-full min-h-screen">
+<!-- Max width container -->
+<div class="w-full max-w-[1440px] flex flex-col items-center">
+<!-- Greeting & Mascot -->
+<div class="mt-8 md:mt-16 flex flex-col items-center justify-center mb-lg w-full text-center">
+<div class="w-24 h-24 mb-6 rounded-full bg-surface-tinted border border-outline-variant flex items-center justify-center shadow-sm overflow-hidden relative group cursor-pointer">
+<img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" data-alt="A highly detailed, 3D rendered avatar of a friendly, futuristic robot mascot. The robot is stylized with smooth, glossy white and soft blue materials, reflecting a luminous, clean, light-mode environment. It features glowing cyan eyes, subtle chrome accents, and an approachable, slightly tilted head posture. The background is a very faint, pure white-grey studio setup to ensure the mascot pops with pristine glassmorphism aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6aZxfOu2GtkHGgWEOp6yUALEMsNCiTCYg7OCEQpPpLkNJzVkXBtRNR2zpbMBawyw7E0kHvWyZeNr9N6bW65PkiK-Hq6nC_9pC1TFlGhqR0x-hVhxmWPZug1fIDMYiEfput-6fI8r1DlKD9uCWui7lLtMNzLblW3dOwL2zMCpRcwMAQKe03XkT--gnIHaWz-9pKlsbx6NsTDZ6WQEuTanguH3LGP57g_wdxti0XUCMgZDv_77nHb9h9w"/>
+</div>
+<h1 class="font-display-lg text-display-lg text-text-primary mb-2">Bonjour, David 👋</h1>
+<p class="font-body-lg text-body-lg text-text-secondary">Que souhaites-tu étudier aujourd'hui ?</p>
+</div>
+<!-- Central Search/Chat Bar -->
+<div class="w-full max-w-3xl mb-8">
+<div class="search-bar-focus bg-surface-subtle rounded-[12px] p-2 flex items-center gap-2 transition-all duration-300">
+<button class="p-3 text-text-secondary hover:text-primary transition-colors rounded-lg">
+<span class="material-symbols-outlined">attach_file</span>
+</button>
+<input class="flex-1 bg-transparent border-none focus:ring-0 font-body-md text-body-md text-text-primary placeholder:text-text-tertiary" placeholder="Pose une question à Dexter..." type="text"/>
+<button class="p-3 text-text-secondary hover:text-primary transition-colors rounded-lg">
+<span class="material-symbols-outlined">mic</span>
+</button>
+<button class="p-3 bg-text-primary text-surface-base hover:bg-primary transition-colors rounded-lg flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">send</span>
+</button>
+</div>
+<!-- Quick Suggestions Chips -->
+<div class="flex flex-wrap items-center justify-center gap-3 mt-6">
+<button class="flex items-center gap-2 px-4 py-2 rounded-full border border-outline-variant bg-surface-base text-text-secondary hover:border-primary hover:text-primary transition-all font-label-md text-label-md shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
+<span class="material-symbols-outlined text-[18px]">calculate</span>
+                        Résoudre une équation
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full border border-outline-variant bg-surface-base text-text-secondary hover:border-primary hover:text-primary transition-all font-label-md text-label-md shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
+<span class="material-symbols-outlined text-[18px]">translate</span>
+                        Traduire un texte
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full border border-outline-variant bg-surface-base text-text-secondary hover:border-primary hover:text-primary transition-all font-label-md text-label-md shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
+<span class="material-symbols-outlined text-[18px]">biotech</span>
+                        Expliquer la mitose
+                    </button>
+</div>
+</div>
+<!-- Domains Grid (Bento Style Layout) -->
+<div class="w-full mt-8">
+<div class="flex items-center justify-between mb-6">
+<h2 class="font-headline-md text-headline-md text-text-primary">Tes domaines d'étude</h2>
+<button class="font-label-md text-label-md text-primary hover:underline">Voir tout</button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter">
+<!-- Domain Card 1 (Large) -->
+<div class="col-span-1 md:col-span-2 row-span-2 bg-surface-base rounded-[20px] border border-[#F1F5F9] p-6 hover:border-primary hover:shadow-[0_10px_30px_rgba(0,0,0,0.04)] transition-all duration-300 group cursor-pointer flex flex-col justify-between min-h-[240px]">
+<div class="flex justify-between items-start">
+<div class="w-12 h-12 rounded-2xl bg-domain-blue/10 flex items-center justify-center text-domain-blue">
+<span class="material-symbols-outlined text-[28px]" style="font-variation-settings: 'FILL' 1;">functions</span>
+</div>
+<span class="font-label-sm text-label-sm text-text-secondary bg-surface-subtle px-3 py-1 rounded-full">12 Chapitres</span>
+</div>
+<div class="mt-8">
+<h3 class="font-headline-lg text-headline-lg text-text-primary group-hover:text-primary transition-colors">Mathématiques</h3>
+<p class="font-body-md text-body-md text-text-secondary mt-2">Algèbre linéaire, Analyse, Probabilités</p>
+</div>
+</div>
+<!-- Domain Card 2 -->
+<div class="col-span-1 bg-surface-base rounded-[20px] border border-[#F1F5F9] p-6 hover:border-primary hover:shadow-[0_10px_30px_rgba(0,0,0,0.04)] transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-xl bg-domain-green/10 flex items-center justify-center text-domain-green">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">biotech</span>
+</div>
+</div>
+<div class="mt-4">
+<h3 class="font-headline-md text-headline-md text-text-primary group-hover:text-primary transition-colors">Biologie</h3>
+<p class="font-label-md text-label-md text-text-tertiary mt-1">8 Chapitres</p>
+</div>
+</div>
+<!-- Domain Card 3 -->
+<div class="col-span-1 bg-surface-base rounded-[20px] border border-[#F1F5F9] p-6 hover:border-primary hover:shadow-[0_10px_30px_rgba(0,0,0,0.04)] transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-xl bg-domain-orange/10 flex items-center justify-center text-domain-orange">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">history_edu</span>
+</div>
+</div>
+<div class="mt-4">
+<h3 class="font-headline-md text-headline-md text-text-primary group-hover:text-primary transition-colors">Histoire</h3>
+<p class="font-label-md text-label-md text-text-tertiary mt-1">15 Chapitres</p>
+</div>
+</div>
+<!-- Domain Card 4 -->
+<div class="col-span-1 bg-surface-base rounded-[20px] border border-[#F1F5F9] p-6 hover:border-primary hover:shadow-[0_10px_30px_rgba(0,0,0,0.04)] transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">science</span>
+</div>
+</div>
+<div class="mt-4">
+<h3 class="font-headline-md text-headline-md text-text-primary group-hover:text-primary transition-colors">Physique</h3>
+<p class="font-label-md text-label-md text-text-tertiary mt-1">10 Chapitres</p>
+</div>
+</div>
+<!-- Domain Card 5 -->
+<div class="col-span-1 bg-surface-base rounded-[20px] border border-[#F1F5F9] p-6 hover:border-primary hover:shadow-[0_10px_30px_rgba(0,0,0,0.04)] transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">language</span>
+</div>
+</div>
+<div class="mt-4">
+<h3 class="font-headline-md text-headline-md text-text-primary group-hover:text-primary transition-colors">Langues</h3>
+<p class="font-label-md text-label-md text-text-tertiary mt-1">24 Chapitres</p>
+</div>
+</div>
+<!-- Domain Card 6 & 7 (Combined row/cols for variety) -->
+<div class="col-span-1 md:col-span-2 lg:col-span-2 grid grid-cols-2 gap-gutter">
+<div class="col-span-1 bg-surface-base rounded-[20px] border border-[#F1F5F9] p-6 hover:border-primary hover:shadow-[0_10px_30px_rgba(0,0,0,0.04)] transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-xl bg-gray-500/10 flex items-center justify-center text-text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">computer</span>
+</div>
+</div>
+<div class="mt-4">
+<h3 class="font-headline-md text-headline-md text-text-primary group-hover:text-primary transition-colors truncate">Informatique</h3>
+<p class="font-label-md text-label-md text-text-tertiary mt-1">6 Chapitres</p>
+</div>
+</div>
+<div class="col-span-1 bg-surface-base rounded-[20px] border border-[#F1F5F9] p-6 hover:border-primary hover:shadow-[0_10px_30px_rgba(0,0,0,0.04)] transition-all duration-300 group cursor-pointer flex flex-col justify-between">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-xl bg-pink-500/10 flex items-center justify-center text-pink-500">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">palette</span>
+</div>
+</div>
+<div class="mt-4">
+<h3 class="font-headline-md text-headline-md text-text-primary group-hover:text-primary transition-colors">Arts</h3>
+<p class="font-label-md text-label-md text-text-tertiary mt-1">4 Chapitres</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

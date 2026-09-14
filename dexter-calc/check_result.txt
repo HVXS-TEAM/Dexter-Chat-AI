@@ -1,0 +1,4 @@
+Traceback (most recent call last):
+  File "E:\Projets Edwin\New\Chatbot & Calco\Dexter Chat AI\dexter-calc\check_registry.py", line 9, in <module>
+    from dexter_calc.finance.van import VANChatCalculator
+ImportError: cannot import name 'VANChatCalculator' from 'dexter_calc.finance.van' (E:\Projets Edwin\New\Chatbot & Calco\Dexter Chat AI\dexter-calc\dexter_calc\finance\van.py)

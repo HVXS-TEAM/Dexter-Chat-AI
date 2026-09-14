@@ -1,0 +1,41 @@
+{
+  "folder_name": "recherche_dexter",
+  "title": "Recherche Dexter",
+  "screen_type": "search page",
+  "design_language": "dark search screen",
+  "theme": "midnight navy",
+  "variant": "dark search",
+  "files": [
+    "screen.png"
+  ],
+  "content_summary": "Page de recherche sombre avec champs, suggestions récentes et sujets populaires organisés en cartes.",
+  "layout": [
+    "search bar",
+    "recent searches",
+    "popular topics grid"
+  ],
+  "dominant_colors": [
+    "#040e1b",
+    "#0d1b2d",
+    "#1b2b3b",
+    "#7a68ff",
+    "#9ec7ff"
+  ],
+  "ui_elements": [
+    "search bar",
+    "topic cards",
+    "subject list"
+  ],
+  "reproduction_spec": {
+    "reference_files": "Use the files array as the source of truth; screen.png is the authoritative visual reference.",
+    "viewport": {"width_px": 1440, "height_px": 1024, "device_scale_factor": 1, "orientation": "landscape"},
+    "grid": {"columns": 12, "gutter_px": 24, "spacing_base_px": 8, "content_max_width_px": 1440, "sidebar_width_px": 280},
+    "tokens": {"font_family": "Inter", "font_weights": [400, 500, 600, 700], "card_radius_px": 18, "control_radius_px": 12, "border_width_px": 1, "glass_blur_px": 16, "surface_strategy": "tonal layering over midnight base"},
+    "component_tree": ["search header", "search bar", "recent searches", "popular topic grid", "subject list"],
+    "typography_contract": "Preserve exact font family, weight, size, line height, letter spacing and capitalization from the visual reference.",
+    "content_contract": "Preserve exact search labels, queries, filters, icons, image placement and line breaks.",
+    "effects_contract": ["Preserve dark tonal layering and glass panels.", "Preserve topic card dimensions, borders, blur, gradient and focus treatment.", "Use the documented icon family and 24px viewbox."],
+    "fidelity_rules": ["Use screen.png as final authority for geometry.", "Compare a rendered screenshot at the reference viewport before accepting the recreation."]
+  },
+  "notes": "Generated from visual analysis of the provided Dexter screen variations."
+}

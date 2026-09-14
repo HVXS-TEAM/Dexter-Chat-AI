@@ -1,0 +1,41 @@
+{
+  "folder_name": "d_tail_mati_re_dexter",
+  "title": "Détail matière Dexter",
+  "screen_type": "subject chapter overview",
+  "design_language": "dark subject dashboard",
+  "theme": "midnight navy",
+  "variant": "dark subject page",
+  "files": [
+    "screen.png"
+  ],
+  "content_summary": "Vue sombre d'un module avec progression, chapitres, contenus associés et progression individuelle.",
+  "layout": [
+    "course title",
+    "progress card",
+    "chapter grid"
+  ],
+  "dominant_colors": [
+    "#040c19",
+    "#0e1a2d",
+    "#1d2d40",
+    "#7d6bff",
+    "#7bd6ff"
+  ],
+  "ui_elements": [
+    "progress card",
+    "chapter cards",
+    "status pills"
+  ],
+  "reproduction_spec": {
+    "reference_files": "Use the files array as the source of truth; screen.png is the authoritative visual reference.",
+    "viewport": {"width_px": 1440, "height_px": 1024, "device_scale_factor": 1, "orientation": "landscape"},
+    "grid": {"columns": 12, "gutter_px": 24, "spacing_base_px": 8, "content_max_width_px": 1440, "sidebar_width_px": 280},
+    "tokens": {"font_family": "Inter", "font_weights": [400, 500, 600, 700], "card_radius_px": 18, "control_radius_px": 12, "border_width_px": 1, "glass_blur_px": 16, "surface_strategy": "tonal layering over midnight base"},
+    "component_tree": ["subject header", "progress card", "chapter grid", "status pills", "lesson actions"],
+    "typography_contract": "Preserve exact font family, weight, size, line height, letter spacing and capitalization from the visual reference.",
+    "content_contract": "Preserve exact course title, chapter labels, statuses, percentages, icons and line breaks.",
+    "effects_contract": ["Preserve dark tonal layering and glass panels.", "Preserve progress indicator dimensions, borders, blur, gradient and active states.", "Use the documented icon family and 24px viewbox."],
+    "fidelity_rules": ["Use screen.png as final authority for geometry.", "Compare a rendered screenshot at the reference viewport before accepting the recreation."]
+  },
+  "notes": "Generated from visual analysis of the provided Dexter screen variations."
+}

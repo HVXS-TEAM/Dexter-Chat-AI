@@ -1,0 +1,43 @@
+{
+  "folder_name": "chat_ia_clair_dexter_1",
+  "title": "Chat clair Dexter 1",
+  "screen_type": "AI conversation UI",
+  "design_language": "light chat dashboard",
+  "theme": "clean light",
+  "variant": "clarified light version 1",
+  "files": [
+    "code.html"
+  ],
+  "content_summary": "Conversation claire où l'assistant répond à une question sur l'entropie. L'interface privilégie la lisibilité, les bulles et la structure hiérarchique.",
+  "layout": [
+    "sidebar",
+    "header",
+    "message thread",
+    "composer"
+  ],
+  "dominant_colors": [
+    "#f6f8fc",
+    "#ffffff",
+    "#dfeaf7",
+    "#7a8ef6",
+    "#4fb3ff"
+  ],
+  "ui_elements": [
+    "user query bubble",
+    "assistant answer",
+    "message footer",
+    "input composer"
+  ],
+  "reproduction_spec": {
+    "reference_files": "Use the files array as the source of truth; code.html is the executable layout reference.",
+    "viewport": {"width_px": 1440, "height_px": 1024, "device_scale_factor": 1, "orientation": "landscape"},
+    "grid": {"columns": 12, "gutter_px": 24, "spacing_base_px": 8, "content_max_width_px": 1440, "sidebar_width_px": 280},
+    "tokens": {"font_family": "Inter", "font_weights": [400, 500, 600, 700], "card_radius_px": 18, "control_radius_px": 12, "border_width_px": 1, "glass_blur_px": 12, "surface_strategy": "light surfaces with subtle borders and soft shadows"},
+    "component_tree": ["fixed sidebar", "conversation header", "user message", "assistant response", "message footer", "composer"],
+    "typography_contract": "Preserve exact font family, weight, size, line height, letter spacing and capitalization from code.html.",
+    "content_contract": "Preserve the exact French wording, mathematical notation, avatar, icon names, image URLs and line breaks.",
+    "effects_contract": ["Preserve chat bubble alignment and widths.", "Preserve border, shadow, blur, gradient and focus treatment.", "Use the documented icon family and 24px viewbox."],
+    "fidelity_rules": ["Use the screenshot or code.html as final authority for geometry.", "Do not replace Inter or the documented icon set.", "Compare a rendered screenshot at the reference viewport before accepting the recreation."]
+  },
+  "notes": "Generated from visual analysis of the provided Dexter screen variations."
+}

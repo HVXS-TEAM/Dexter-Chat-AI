@@ -1,0 +1,43 @@
+{
+  "folder_name": "aether_intelligence",
+  "title": "Aether Intelligence",
+  "screen_type": "AI learning hub landing",
+  "design_language": "dark glassmorphism",
+  "theme": "deep navy",
+  "variant": "main concept",
+  "files": [
+    "DESIGN.md"
+  ],
+  "content_summary": "Dashboard d'accueil pour un assistant IA éducatif avec navigation latérale, cartes de matières et point d'entrée sur le parcours d'apprentissage.",
+  "layout": [
+    "navigation latérale",
+    "hero central",
+    "cartes de matières",
+    "CTA premium"
+  ],
+  "dominant_colors": [
+    "#050b16",
+    "#111c2f",
+    "#6f7cff",
+    "#7ad7ff",
+    "#f4f6fb"
+  ],
+  "ui_elements": [
+    "logo Dexter",
+    "sidebar",
+    "subject cards",
+    "Premium CTA"
+  ],
+  "reproduction_spec": {
+    "reference_files": "Use the files array as the source of truth; DESIGN.md contains the token and component contract.",
+    "viewport": {"width_px": 1440, "height_px": 1024, "device_scale_factor": 1, "orientation": "landscape"},
+    "grid": {"columns": 12, "gutter_px": 24, "spacing_base_px": 8, "content_max_width_px": 1440, "sidebar_width_px": 280},
+    "tokens": {"font_family": "Inter", "font_weights": [400, 500, 600, 700], "card_radius_px": 18, "control_radius_px": 12, "border_width_px": 1, "glass_blur_px": 16, "surface_strategy": "tonal layering over midnight base"},
+    "component_tree": ["fixed sidebar", "brand header", "primary navigation", "hero or greeting", "subject cards", "primary CTA"],
+    "typography_contract": "Preserve exact font family, weight, size, line height, letter spacing and capitalization from DESIGN.md or code.html.",
+    "content_contract": "Preserve all visible text, icon names, image URLs, labels and line breaks from the reference files.",
+    "effects_contract": ["Use the documented background and surface colors.", "Preserve gradients, blur, opacity, borders and hover/focus states.", "Use the documented icon family and 24px viewbox."],
+    "fidelity_rules": ["Use the screenshot as final authority for geometry.", "Do not replace Inter or the documented icon set.", "Compare a rendered screenshot at the reference viewport before accepting the recreation."]
+  },
+  "notes": "Generated from visual analysis of the provided Dexter screen variations."
+}

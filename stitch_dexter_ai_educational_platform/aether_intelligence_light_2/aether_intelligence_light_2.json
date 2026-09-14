@@ -1,0 +1,42 @@
+{
+  "folder_name": "aether_intelligence_light_2",
+  "title": "Aether Intelligence Light 2",
+  "screen_type": "AI learning hub landing",
+  "design_language": "light glassmorphism",
+  "theme": "soft cloud",
+  "variant": "light variant 2",
+  "files": [
+    "DESIGN.md"
+  ],
+  "content_summary": "Deuxième variante claire, centrée sur le prompt utilisateur et les sujets populaires avec une composition plus aérée.",
+  "layout": [
+    "hero prompt",
+    "recent searches",
+    "popular subjects",
+    "cards in grid"
+  ],
+  "dominant_colors": [
+    "#eff3fa",
+    "#f8fbff",
+    "#dfe7f3",
+    "#7d8ef5",
+    "#b5caff"
+  ],
+  "ui_elements": [
+    "search bar",
+    "recent searches",
+    "topic cards"
+  ],
+  "reproduction_spec": {
+    "reference_files": "Use the files array as the source of truth; DESIGN.md contains the token and component contract.",
+    "viewport": {"width_px": 1440, "height_px": 1024, "device_scale_factor": 1, "orientation": "landscape"},
+    "grid": {"columns": 12, "gutter_px": 24, "spacing_base_px": 8, "content_max_width_px": 1440, "sidebar_width_px": 280},
+    "tokens": {"font_family": "Inter", "font_weights": [400, 500, 600, 700], "card_radius_px": 18, "control_radius_px": 12, "border_width_px": 1, "glass_blur_px": 12, "surface_strategy": "light layered surfaces with subtle borders"},
+    "component_tree": ["page shell", "prompt hero", "recent searches", "popular subjects", "topic card grid"],
+    "typography_contract": "Preserve exact font family, weight, size, line height, letter spacing and capitalization from DESIGN.md or code.html.",
+    "content_contract": "Preserve all visible text, icon names, image URLs, labels and line breaks from the reference files.",
+    "effects_contract": ["Use the documented light surfaces and gradient accents.", "Preserve borders, shadows, blur, opacity and hover/focus states.", "Use the documented icon family and 24px viewbox."],
+    "fidelity_rules": ["Use the screenshot as final authority for geometry.", "Do not replace Inter or the documented icon set.", "Compare a rendered screenshot at the reference viewport before accepting the recreation."]
+  },
+  "notes": "Generated from visual analysis of the provided Dexter screen variations."
+}

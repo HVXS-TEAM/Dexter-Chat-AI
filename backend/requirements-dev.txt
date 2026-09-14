@@ -1,0 +1,4 @@
+# Development / test-only dependencies (not needed at runtime).
+# Install with: pip install -r requirements-dev.txt
+pytest
+httpx

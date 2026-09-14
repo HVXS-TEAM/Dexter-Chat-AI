@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dexter AI - Accueil</title>
+    <script src='https://cdn.tailwindcss.com?plugins=forms,container-queries'></script>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#13121b",
+                        "on-secondary-fixed": "#111c2d",
+                        "background": "#13121b",
+                        "surface-container-high": "#2a2933",
+                        "on-background": "#e4e1ee",
+                        "error": "#ffb4ab",
+                        "on-error-container": "#ffdad6",
+                        "tertiary-fixed": "#ffdbcc",
+                        "surface-container-low": "#1b1b24",
+                        "on-tertiary-container": "#ffd2be",
+                        "surface-container-highest": "#35343e",
+                        "tertiary": "#ffb695",
+                        "outline": "#918fa1",
+                        "on-primary": "#1d00a5",
+                        "surface-container": "#1f1f28",
+                        "on-surface-variant": "#c7c4d8",
+                        "outline-variant": "#464555",
+                        "on-surface": "#e4e1ee",
+                        "on-secondary-container": "#aeb9d0",
+                        "surface": "#13121b",
+                        "primary-fixed-dim": "#c3c0ff",
+                        "on-tertiary-fixed": "#351000",
+                        "tertiary-container": "#a44100",
+                        "on-primary-fixed-variant": "#3323cc",
+                        "primary-fixed": "#e2dfff",
+                        "secondary": "#bcc7de",
+                        "inverse-primary": "#4d44e3",
+                        "inverse-surface": "#e4e1ee",
+                        "on-tertiary-fixed-variant": "#7b2f00",
+                        "on-secondary": "#263143",
+                        "secondary-container": "#3e495d",
+                        "surface-container-lowest": "#0e0d16",
+                        "on-primary-fixed": "#0f0069",
+                        "surface-variant": "#35343e",
+                        "on-tertiary": "#571f00",
+                        "tertiary-fixed-dim": "#ffb695",
+                        "secondary-fixed-dim": "#bcc7de",
+                        "on-primary-container": "#dad7ff",
+                        "secondary-fixed": "#d8e3fb",
+                        "surface-tint": "#c3c0ff",
+                        "inverse-on-surface": "#302f39",
+                        "on-error": "#690005",
+                        "primary": "#c3c0ff",
+                        "error-container": "#93000a",
+                        "on-secondary-fixed-variant": "#3c475a",
+                        "primary-container": "#4f46e5",
+                        "surface-bright": "#393842"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "max_width": "1440px",
+                        "xs": "4px",
+                        "sm": "12px",
+                        "xl": "64px",
+                        "base": "8px",
+                        "gutter": "24px",
+                        "lg": "40px",
+                        "margin": "32px",
+                        "md": "24px"
+                    },
+                    "fontFamily": {
+                        "display-lg": ["Inter", "sans-serif"],
+                        "headline-lg": ["Inter", "sans-serif"],
+                        "label-md": ["Inter", "sans-serif"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "label-sm": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "headline-md": ["Inter", "sans-serif"]
+                    },
+                    "fontSize": {
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-md": ["14px", { "lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "500" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0B0E14; /* Midnight Minimalism Z-Index 0 */
+            color: #e4e1ee;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #c3c0ff, #ffb695);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .card-bg {
+            background-color: #111827;
+            border: 1px solid #1F2937;
+        }
+        
+        .card-hover:hover {
+            border-color: rgba(195, 192, 255, 0.5);
+            box-shadow: 0 0 15px rgba(195, 192, 255, 0.1);
+        }
+
+        .search-focus:focus-within {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 1px #4f46e5;
+        }
+        
+        /* Custom Scrollbar for side nav if needed */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #35343e;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #464555;
+        }
+    </style>
+</head>
+<body class="antialiased min-h-screen flex">
+
+    <!-- SideNavBar (Shared Component) -->
+    <nav class="hidden md:flex flex-col h-full p-md bg-surface-container-low dark:bg-surface-container-low fixed left-0 top-0 w-[280px] border-r border-outline-variant z-10" aria-label="Main Navigation">
+        <!-- Brand Header -->
+        <div class="flex items-center gap-sm mb-lg px-sm">
+            <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuBBI8RCwS62_WFr-_valrLpAJfBW_KmNBWhHa_zuLkMI3I0cdJ8ckYCw02GqyB0ahSHDsaaT-Hqp1sUa42rZMLlBXYnkLxDYRW0Faq4dxJggl4-7O5c0Il6zFJx3IgvjX_Pljhz6ZqlgQBeOqCZnBsTS0l8pIwse7zt9_f4DyB4oLD2GuV8eKZ8r2JzCqpNIlgN1km7o7xNF0-Pu8ZsqaDi0Tb-JNu2D9vrTqKNRrUmdWcdVwFYSMhHFhYTPGxA-P-hvyg" alt="Dexter AI Logo" class="w-10 h-10 rounded-lg object-cover">
+            <div>
+                <h1 class="font-display-lg text-[24px] font-bold text-on-surface dark:text-on-surface leading-tight">Dexter</h1>
+                <p class="font-label-sm text-on-surface-variant">AI Study Assistant</p>
+            </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <div class="flex flex-col gap-xs flex-grow">
+            <!-- Active: Accueil -->
+            <a href="#" class="flex items-center gap-sm px-sm py-sm rounded-lg text-primary dark:text-primary font-bold border-r-2 border-primary hover:bg-surface-container-highest transition-colors active:scale-95" aria-current="page">
+                <span class="material-symbols-outlined" data-weight="fill" style="font-variation-settings: 'FILL' 1;">home</span>
+                <span class="font-label-md">Accueil</span>
+            </a>
+            <a href="#" class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors active:scale-95">
+                <span class="material-symbols-outlined">search</span>
+                <span class="font-label-md">Recherche</span>
+            </a>
+            <a href="#" class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors active:scale-95">
+                <span class="material-symbols-outlined">chat</span>
+                <span class="font-label-md">Chat</span>
+            </a>
+            <a href="#" class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors active:scale-95">
+                <span class="material-symbols-outlined">auto_stories</span>
+                <span class="font-label-md">Mes matières</span>
+            </a>
+            <a href="#" class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors active:scale-95">
+                <span class="material-symbols-outlined">history</span>
+                <span class="font-label-md">Historique</span>
+            </a>
+            <div class="mt-auto flex flex-col gap-xs">
+                 <a href="#" class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors active:scale-95">
+                    <span class="material-symbols-outlined">account_circle</span>
+                    <span class="font-label-md">Profil</span>
+                </a>
+                <a href="#" class="flex items-center gap-sm px-sm py-sm rounded-lg text-on-surface-variant hover:bg-surface-container-highest transition-colors active:scale-95">
+                    <span class="material-symbols-outlined">settings</span>
+                    <span class="font-label-md">Paramètres</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- CTA -->
+        <button class="mt-md w-full py-sm px-md rounded-lg font-label-md font-bold text-white bg-gradient-to-r from-primary-container to-inverse-primary hover:brightness-110 transition-all">
+            Upgrade to Pro
+        </button>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="ml-[280px] flex-1 flex flex-col items-center min-h-screen px-gutter py-xl">
+        <div class="w-full max-w-[1000px] flex flex-col items-center">
+            
+            <!-- Greeting & Mascot -->
+            <div class="flex flex-col items-center mb-lg text-center mt-xl">
+                <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCP_6uAq7_16MqK1se04lQRzESbzooa6c7rKlPLcxODo-Rc3fyO0xHbq0pUo3kp5oOlwE3X7LPyY6IYRrYMGD_2w4seK-_R_OyuiKih9mMEVtOgxwsxYlBn7Yza71111y8ciIhzy-vhlLdROOz5CtMTAd1rukee-KarRwOY3-AW04fsoKRymQidWjohlx5VF3CfLtJW-tDS0ec2Z2_fqfqB-NH5XDFVcNgJKPWXpkTd89UKhIqWdD9OXsywx1G53F7S6vY" alt="Dexter Mascot" class="w-32 h-32 rounded-2xl mb-sm object-cover drop-shadow-2xl">
+                <h2 class="font-headline-lg text-headline-lg text-on-surface mb-xs">
+                    Bonjour, <span class="gradient-text">David 👋</span>
+                </h2>
+                <p class="font-body-lg text-on-surface-variant">Prêt à approfondir tes connaissances aujourd'hui ?</p>
+            </div>
+
+            <!-- Search / Question Bar -->
+            <div class="w-full max-w-[800px] mb-md relative group">
+                <div class="absolute -inset-0.5 bg-gradient-to-r from-primary-container to-tertiary-container rounded-[20px] blur opacity-30 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                <div class="relative flex items-center bg-[#09090B] border border-outline-variant rounded-[18px] p-sm search-focus transition-all">
+                    <span class="material-symbols-outlined text-outline ml-sm mr-sm">search</span>
+                    <input type="text" placeholder="Pose-moi une question..." class="flex-1 bg-transparent border-none outline-none text-on-surface font-body-md placeholder:text-outline-variant py-sm px-xs focus:ring-0">
+                    <div class="flex items-center gap-xs pr-sm text-outline">
+                        <button class="p-xs hover:text-primary transition-colors rounded-full hover:bg-surface-container-highest"><span class="material-symbols-outlined text-[20px]">attach_file</span></button>
+                        <button class="p-xs hover:text-primary transition-colors rounded-full hover:bg-surface-container-highest"><span class="material-symbols-outlined text-[20px]">mic</span></button>
+                        <button class="bg-gradient-to-r from-primary-container to-inverse-primary text-white p-sm rounded-lg ml-xs hover:brightness-110 transition-all flex items-center justify-center">
+                            <span class="material-symbols-outlined text-[20px]">send</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Suggestion Chips -->
+            <div class="flex flex-wrap justify-center gap-sm mb-xl">
+                <button class="px-md py-xs rounded-full border border-outline-variant bg-surface-container-low text-on-surface-variant font-label-sm hover:border-primary hover:text-primary transition-colors">
+                    Expliquer l'inflation
+                </button>
+                <button class="px-md py-xs rounded-full border border-outline-variant bg-surface-container-low text-on-surface-variant font-label-sm hover:border-primary hover:text-primary transition-colors">
+                    Formules de bilan
+                </button>
+                <button class="px-md py-xs rounded-full border border-outline-variant bg-surface-container-low text-on-surface-variant font-label-sm hover:border-primary hover:text-primary transition-colors">
+                    Réviser Droit Social
+                </button>
+            </div>
+
+            <!-- Domain Cards Grid (Bento style) -->
+            <div class="w-full">
+                <div class="flex items-center justify-between mb-md">
+                    <h3 class="font-headline-md text-headline-md text-on-surface">Tes Matières</h3>
+                    <a href="#" class="text-primary font-label-md hover:underline">Voir tout</a>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-md">
+                    
+                    <!-- Card 1 -->
+                    <div class="card-bg rounded-[18px] p-md card-hover transition-all cursor-pointer flex flex-col justify-between group h-[160px]">
+                        <div class="flex items-start justify-between">
+                            <div class="w-10 h-10 rounded-full bg-[#10b981]/20 flex items-center justify-center text-[#10b981]">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                            </div>
+                            <span class="material-symbols-outlined text-outline-variant group-hover:text-primary transition-colors">arrow_forward</span>
+                        </div>
+                        <div>
+                            <h4 class="font-label-md text-[16px] font-semibold text-on-surface mb-xs">Éco & Marché</h4>
+                            <p class="font-label-sm text-outline-variant">23 chapitres</p>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="card-bg rounded-[18px] p-md card-hover transition-all cursor-pointer flex flex-col justify-between group h-[160px]">
+                        <div class="flex items-start justify-between">
+                            <div class="w-10 h-10 rounded-full bg-[#3b82f6]/20 flex items-center justify-center text-

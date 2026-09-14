@@ -1,0 +1,42 @@
+{
+  "folder_name": "profil_param_tres_clair_dexter_2",
+  "title": "Profil & paramètres clair Dexter 2",
+  "screen_type": "profile/dashboard",
+  "design_language": "light profile dashboard",
+  "theme": "soft neutral",
+  "variant": "light profile 2",
+  "files": [
+    "code.html",
+    "screen.png"
+  ],
+  "content_summary": "Deuxième version claire du profil, plus centrée sur les indicateurs de progression et les actions de compte.",
+  "layout": [
+    "header box",
+    "metrics row",
+    "settings tiles"
+  ],
+  "dominant_colors": [
+    "#f4f7fb",
+    "#ffffff",
+    "#e5ebf9",
+    "#8d7af7",
+    "#f7d7d7"
+  ],
+  "ui_elements": [
+    "user stats",
+    "consumption metrics",
+    "account actions"
+  ],
+  "reproduction_spec": {
+    "reference_files": "Use the files array as the source of truth; screen.png is the authoritative visual reference.",
+    "viewport": {"width_px": 1440, "height_px": 1024, "device_scale_factor": 1, "orientation": "landscape"},
+    "grid": {"columns": 12, "gutter_px": 24, "spacing_base_px": 8, "content_max_width_px": 1440, "sidebar_width_px": 280},
+    "tokens": {"font_family": "Inter", "font_weights": [400, 500, 600, 700], "card_radius_px": 18, "control_radius_px": 12, "border_width_px": 1, "glass_blur_px": 12, "surface_strategy": "light surfaces with subtle borders and soft shadows"},
+    "component_tree": ["profile header", "user identity block", "progress metrics row", "settings tiles", "account actions"],
+    "typography_contract": "Preserve exact font family, weight, size, line height, letter spacing and capitalization from the visual reference.",
+    "content_contract": "Preserve exact user labels, metric values, settings labels, icons, image placement and line breaks.",
+    "effects_contract": ["Preserve metric card dimensions and alignment.", "Preserve border, shadow, blur, gradient and focus treatment.", "Use the documented icon family and 24px viewbox."],
+    "fidelity_rules": ["Use screen.png as final authority for geometry.", "Compare a rendered screenshot at the reference viewport before accepting the recreation."]
+  },
+  "notes": "Generated from visual analysis of the provided Dexter screen variations."
+}

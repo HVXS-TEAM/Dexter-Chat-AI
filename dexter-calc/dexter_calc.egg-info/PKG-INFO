@@ -1,0 +1,7 @@
+Metadata-Version: 2.4
+Name: dexter-calc
+Version: 0.1.0
+Summary: Calculs financiers et comptables pour Dexter Chat AI
+Author-email: Edwin Jamel Kouokam <edwin.jamel@example.com>
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"

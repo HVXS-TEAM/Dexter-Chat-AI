@@ -1,0 +1,42 @@
+{
+  "folder_name": "recherche_clair_dexter_2",
+  "title": "Recherche claire Dexter 2",
+  "screen_type": "search page",
+  "design_language": "light search screen",
+  "theme": "soft blue-white",
+  "variant": "light search 2",
+  "files": [
+    "code.html",
+    "screen.png"
+  ],
+  "content_summary": "Variante claire orientée apprentissage avec focus sur les recherches récentes et un bloc d'exploration.",
+  "layout": [
+    "header search",
+    "card grid",
+    "drop-down selector"
+  ],
+  "dominant_colors": [
+    "#f4f7fb",
+    "#ffffff",
+    "#dfe8f6",
+    "#7c83f5",
+    "#7ec9ff"
+  ],
+  "ui_elements": [
+    "search cluster",
+    "cards",
+    "dropdown"
+  ],
+  "reproduction_spec": {
+    "reference_files": "Use the files array as the source of truth; screen.png is the authoritative visual reference.",
+    "viewport": {"width_px": 1440, "height_px": 1024, "device_scale_factor": 1, "orientation": "landscape"},
+    "grid": {"columns": 12, "gutter_px": 24, "spacing_base_px": 8, "content_max_width_px": 1440, "sidebar_width_px": 280},
+    "tokens": {"font_family": "Inter", "font_weights": [400, 500, 600, 700], "card_radius_px": 18, "control_radius_px": 12, "border_width_px": 1, "glass_blur_px": 12, "surface_strategy": "light surfaces with subtle borders and soft shadows"},
+    "component_tree": ["search header", "search field", "recent query cards", "topic grid", "selector or filter"],
+    "typography_contract": "Preserve exact font family, weight, size, line height, letter spacing and capitalization from the visual reference.",
+    "content_contract": "Preserve exact search labels, queries, filters, icons, image placement and line breaks.",
+    "effects_contract": ["Preserve topic grid geometry and selector placement.", "Preserve border, shadow, blur, gradient and focus treatment.", "Use the documented icon family and 24px viewbox."],
+    "fidelity_rules": ["Use screen.png as final authority for geometry.", "Compare a rendered screenshot at the reference viewport before accepting the recreation."]
+  },
+  "notes": "Generated from visual analysis of the provided Dexter screen variations."
+}

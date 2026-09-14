@@ -1,0 +1,52 @@
+[
+  {
+    "id": "comptabilite",
+    "label": "Comptabilité",
+    "keywords": [
+      "comptabilite",
+      "bilan",
+      "compte de resultat",
+      "journal",
+      "grand livre",
+      "tableau de bord",
+      "actif",
+      "passif",
+      "ohada",
+      "comptabilité générale",
+      "balance"
+    ],
+    "sous_themes": [
+      "bilan",
+      "compte de résultat",
+      "journal comptable",
+      "analyse financière",
+      "régularisation"
+    ],
+    "referentiels": ["OHADA", "IFRS", "US GAAP"]
+  },
+  {
+    "id": "finance",
+    "label": "Finance",
+    "keywords": [
+      "finance",
+      "valeur actuelle nette",
+      "van",
+      "cash flow",
+      "taux d'intérêt",
+      "rentabilite",
+      "risque",
+      "portefeuille",
+      "bourse",
+      "capitalisation",
+      "analyse de projet"
+    ],
+    "sous_themes": [
+      "valuation",
+      "analyse de risque",
+      "cash flow",
+      "gestion de portefeuille",
+      "financement"
+    ],
+    "referentiels": ["IFRS", "Bâle III", "PCAOB"]
+  }
+]

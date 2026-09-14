@@ -1,0 +1,5 @@
+﻿E:\Projets Edwin\New\Chatbot & Calco\Dexter Chat AI\dexter-calc\dexter_calc\core\calculator.py
+E:\Projets Edwin\New\Chatbot & Calco\Dexter Chat AI\dexter-calc\dexter_calc\core\exceptions.py
+E:\Projets Edwin\New\Chatbot & Calco\Dexter Chat AI\dexter-calc\dexter_calc\core\registry.py
+E:\Projets Edwin\New\Chatbot & Calco\Dexter Chat AI\dexter-calc\dexter_calc\core\validators.py
+E:\Projets Edwin\New\Chatbot & Calco\Dexter Chat AI\dexter-calc\dexter_calc\core\__init__.py

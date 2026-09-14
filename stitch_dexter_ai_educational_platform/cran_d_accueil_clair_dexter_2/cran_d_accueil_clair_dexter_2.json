@@ -1,0 +1,43 @@
+{
+  "folder_name": "cran_d_accueil_clair_dexter_2",
+  "title": "Accueil clair Dexter 2",
+  "screen_type": "home landing page",
+  "design_language": "light dashboard",
+  "theme": "soft blue-white",
+  "variant": "light home 2",
+  "files": [
+    "code.html",
+    "screen.png"
+  ],
+  "content_summary": "Page d'accueil claire plus orientée découverte de sujets et exploration par thématique.",
+  "layout": [
+    "hero",
+    "search bar",
+    "topic grid",
+    "cards list"
+  ],
+  "dominant_colors": [
+    "#f2f5f9",
+    "#ffffff",
+    "#dfe8f5",
+    "#6c7cf3",
+    "#9fd5ff"
+  ],
+  "ui_elements": [
+    "search input",
+    "recent cards",
+    "themes grid"
+  ],
+  "reproduction_spec": {
+    "reference_files": "Use the files array as the source of truth; code.html is the executable layout reference.",
+    "viewport": {"width_px": 1440, "height_px": 1024, "device_scale_factor": 1, "orientation": "landscape"},
+    "grid": {"columns": 12, "gutter_px": 24, "spacing_base_px": 8, "content_max_width_px": 1440, "sidebar_width_px": 280},
+    "tokens": {"font_family": "Inter", "font_weights": [400, 500, 600, 700], "card_radius_px": 18, "control_radius_px": 12, "border_width_px": 1, "glass_blur_px": 12, "surface_strategy": "light surfaces with subtle borders and soft shadows"},
+    "component_tree": ["fixed sidebar", "greeting hero", "search field", "recent searches", "topic exploration grid"],
+    "typography_contract": "Preserve exact font family, weight, size, line height, letter spacing and capitalization from code.html.",
+    "content_contract": "Preserve all visible French text, labels, icons, image URLs and line breaks.",
+    "effects_contract": ["Preserve the exploration grid geometry and spacing.", "Preserve border, shadow, blur, gradient and focus treatment.", "Use the documented icon family and 24px viewbox."],
+    "fidelity_rules": ["Use the screenshot or code.html as final authority for geometry.", "Compare a rendered screenshot at the reference viewport before accepting the recreation."]
+  },
+  "notes": "Generated from visual analysis of the provided Dexter screen variations."
+}

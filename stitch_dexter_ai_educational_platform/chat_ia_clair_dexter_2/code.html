@@ -1,0 +1,382 @@
+<!DOCTYPE html><html class="light" lang="fr"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Dexter AI Chat</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "text-primary": "#0F172A",
+                      "on-tertiary-fixed": "#351000",
+                      "surface-bright": "#faf8ff",
+                      "on-secondary-fixed": "#25005a",
+                      "surface-variant": "#dae2fd",
+                      "gradient-end": "#8B5CF6",
+                      "on-surface": "#131b2e",
+                      "secondary-fixed-dim": "#d2bbff",
+                      "on-primary-fixed": "#0f0069",
+                      "on-primary-fixed-variant": "#3323cc",
+                      "text-tertiary": "#94A3B8",
+                      "domain-green": "#10B981",
+                      "primary-fixed-dim": "#c3c0ff",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-tinted": "#F8F7FF",
+                      "surface-subtle": "#F1F0FB",
+                      "secondary": "#712ae2",
+                      "primary-fixed": "#e2dfff",
+                      "on-primary-container": "#dad7ff",
+                      "on-primary": "#ffffff",
+                      "text-secondary": "#475569",
+                      "inverse-surface": "#283044",
+                      "outline-variant": "#c7c4d8",
+                      "on-secondary-fixed-variant": "#5a00c6",
+                      "surface-tint": "#4d44e3",
+                      "primary": "#3525cd",
+                      "surface-container-high": "#e2e7ff",
+                      "secondary-fixed": "#eaddff",
+                      "surface-dim": "#d2d9f4",
+                      "background": "#faf8ff",
+                      "tertiary-container": "#a44100",
+                      "domain-orange": "#F59E0B",
+                      "tertiary-fixed": "#ffdbcc",
+                      "on-secondary-container": "#fffbff",
+                      "error": "#ba1a1a",
+                      "gradient-start": "#3B82F6",
+                      "inverse-primary": "#c3c0ff",
+                      "primary-container": "#4f46e5",
+                      "surface": "#faf8ff",
+                      "surface-base": "#FFFFFF",
+                      "inverse-on-surface": "#eef0ff",
+                      "on-error": "#ffffff",
+                      "surface-container": "#eaedff",
+                      "on-tertiary": "#ffffff",
+                      "tertiary-fixed-dim": "#ffb695",
+                      "domain-blue": "#0EA5E9",
+                      "tertiary": "#7e3000",
+                      "error-container": "#ffdad6",
+                      "on-tertiary-fixed-variant": "#7b2f00",
+                      "surface-container-low": "#f2f3ff",
+                      "secondary-container": "#8a4cfc",
+                      "outline": "#777587",
+                      "on-surface-variant": "#464555",
+                      "on-background": "#131b2e",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-container": "#ffd2be",
+                      "on-error-container": "#93000a",
+                      "surface-container-highest": "#dae2fd"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "max_width": "1440px",
+                      "xl": "64px",
+                      "xs": "4px",
+                      "base": "8px",
+                      "margin": "32px",
+                      "sm": "12px",
+                      "gutter": "24px",
+                      "lg": "40px",
+                      "md": "24px"
+              },
+              "fontFamily": {
+                      "display-lg": [
+                              "Inter"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "Inter"
+                      ],
+                      "headline-md": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "36px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #ffffff; /* Z-Index 0: Base */
+        }
+        
+        .glass-panel {
+            background-color: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid #E2E8F0;
+        }
+
+        .chat-bubble-user {
+            background: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+            box-shadow: inset 0 2px 4px rgba(255,255,255,0.2);
+        }
+        
+        .chat-input-focus:focus-within {
+            border: 1px solid transparent;
+            background-clip: padding-box, border-box;
+            background-image: linear-gradient(#F1F0FB, #F1F0FB), linear-gradient(135deg, #3B82F6, #8B5CF6);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.15);
+        }
+
+        /* Scrollbar Styling */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #E2E8F0;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #CBD5E1;
+        }
+    </style>
+</head>
+<body class="text-text-primary antialiased h-screen overflow-hidden flex bg-surface-container-lowest">
+<!-- SideNavBar (Shared Component JSON Mapping) -->
+<nav aria-label="Main Navigation" class="hidden md:flex flex-col h-full p-6 justify-between bg-surface-container-lowest dark:bg-surface-dim border-r border-outline-variant dark:border-outline h-screen w-[280px] fixed left-0 top-0 z-10">
+<!-- Brand Header -->
+<div class="flex items-center gap-sm mb-lg">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdGAzjGRJkqWSpdYuMMVCIZFgKE5P5aouhWjSa8CfT7nCQZ-de6fBYKK25Cnz0KqyIqQOnep-wJ8QEzR-f7fze1ojpGKB7V6EZAFIgS5d5a44Bjs_f3fvWlHBj0ZNSSE7LrHeheofGqPqTcpt2lbUJNG_UOpBwNJau413kwkyZthgx6R2N6ie6jgD9LyWFGo_J0tC9YadUjHAIyGqwX7tC6_5OQ2cLTvESbm8qrpAQm0lDdhEYOIODJrNqbye7iBIxk8I" alt="Dexter Logo" class="w-10 h-10 rounded-xl object-cover shadow-sm">
+<div>
+<h1 class="font-headline-md text-headline-md font-bold text-text-primary dark:text-on-surface">Dexter</h1>
+<p class="font-label-sm text-label-sm text-text-secondary">Study Assistant</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<div class="flex flex-col gap-xs flex-grow font-body-md text-body-md label-sm:font-label-sm text-label-sm">
+<a class="flex items-center gap-sm px-md py-sm rounded-xl text-text-secondary dark:text-on-surface-variant hover:bg-surface-subtle dark:hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="">Accueil</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm rounded-xl text-text-secondary dark:text-on-surface-variant hover:bg-surface-subtle dark:hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="search">search</span>
+<span class="">Recherche</span>
+</a>
+<!-- Active Tab Mapping: Chat -->
+<a class="flex items-center gap-sm px-md py-sm rounded-xl text-primary dark:text-primary-fixed font-bold bg-surface-subtle dark:bg-surface-container-high transform scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="chat_bubble" data-weight="fill" style="font-variation-settings: 'FILL' 1;">chat_bubble</span>
+<span class="">Chat</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm rounded-xl text-text-secondary dark:text-on-surface-variant hover:bg-surface-subtle dark:hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="auto_stories">auto_stories</span>
+<span class="">Mes matières</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm rounded-xl text-text-secondary dark:text-on-surface-variant hover:bg-surface-subtle dark:hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="history">history</span>
+<span class="">Historique</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm rounded-xl text-text-secondary dark:text-on-surface-variant hover:bg-surface-subtle dark:hover:bg-surface-container hover:text-primary transition-colors duration-200 mt-auto" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="">Profil</span>
+</a>
+<a class="flex items-center gap-sm px-md py-sm rounded-xl text-text-secondary dark:text-on-surface-variant hover:bg-surface-subtle dark:hover:bg-surface-container hover:text-primary transition-colors duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="">Paramètres</span>
+</a>
+</div>
+<!-- CTA -->
+<div class="mt-lg">
+<button class="w-full py-sm rounded-xl bg-gradient-to-r from-gradient-start to-gradient-end text-on-primary font-label-md text-label-md shadow-[inset_0_2px_4px_rgba(255,255,255,0.2)] hover:opacity-90 transition-opacity">
+                Upgrade to Pro
+            </button>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col h-full md:ml-[280px] bg-surface-container-lowest relative">
+<!-- Top Context Header (Mobile + Context) -->
+<header class="flex items-center justify-between p-md border-b border-surface-subtle shrink-0 glass-panel absolute top-0 w-full z-10 rounded-b-[20px]">
+<div class="flex items-center gap-sm md:hidden">
+<button class="text-text-secondary hover:text-primary p-xs rounded-full hover:bg-surface-subtle transition-colors">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<span class="font-headline-lg-mobile text-headline-lg-mobile font-bold">Chat</span>
+</div>
+<!-- Context/Topic Info -->
+<div class="hidden md:flex flex-col items-center flex-1">
+<h2 class="font-label-md text-label-md text-text-primary">Discussion: Mécanique Quantique</h2>
+<p class="font-label-sm text-label-sm text-text-tertiary">Aujourd'hui à 14:30</p>
+</div>
+<div class="flex items-center gap-sm ml-auto">
+<button class="text-text-secondary hover:text-primary p-xs rounded-full hover:bg-surface-subtle transition-colors" title="Export">
+<span class="material-symbols-outlined" data-icon="ios_share">ios_share</span>
+</button>
+</div>
+</header>
+<!-- Chat History Area -->
+<div class="flex-1 overflow-y-auto px-4 md:px-margin pt-[80px] pb-[100px] flex flex-col gap-md max-w-max_width mx-auto w-full">
+<!-- System/Time Divider -->
+<div class="flex justify-center my-sm">
+<span class="font-label-sm text-label-sm text-text-tertiary bg-surface-subtle px-md py-xs rounded-full">Hier</span>
+</div>
+<!-- Assistant Bubble (Dexter) -->
+<div class="flex gap-sm max-w-[85%] md:max-w-[70%] items-end">
+<div class="w-8 h-8 rounded-full flex-shrink-0 bg-surface-subtle flex items-center justify-center overflow-hidden border border-outline-variant">
+<img alt="Dexter Assistant Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCrnWNlACgnFNXbmbVpXp3afs4KUZJOaj-2khmeOrNys8ORxYtulnESfK4GYU98vEKEeJ26caNEr5cJ52kQVuVMl6uNCHh9F46kzfTaCw2i_9zgXnNgSunZ8I9DZJ9bJZNBC_0lk1cy0Zxhy9vLUTzBahRBVpPBc3p5sevu2hp5yqUpcVKnvhNdfKWEzEOSlKLkwAxL3IAv7dfILyJwBXy0iBzW4-7F0YwQ6o_VcWbhKyUY7c3va5xn5oPNMRbNVMnHFOo">
+</div>
+<div class="bg-surface-subtle border border-[#F1F5F9] rounded-[20px] rounded-bl-sm p-md text-text-primary font-body-md text-body-md relative group hover:border-primary transition-colors">
+<p class="">Bonjour ! Je suis Dexter, ton assistant d'étude. Comment puis-je t'aider aujourd'hui avec tes révisions ?</p>
+</div>
+</div>
+<!-- User Bubble -->
+<div class="flex gap-sm max-w-[85%] md:max-w-[70%] self-end items-end flex-row-reverse">
+<div class="w-8 h-8 rounded-full flex-shrink-0 bg-gradient-to-br from-domain-blue to-primary-container flex items-center justify-center text-on-primary font-label-sm">
+                    U
+                </div>
+<div class="chat-bubble-user rounded-[20px] rounded-br-sm p-md text-on-primary font-body-md text-body-md shadow-sm">
+<p class="">Salut Dexter. J'ai du mal à comprendre le principe d'incertitude d'Heisenberg. Tu peux m'expliquer simplement ?</p>
+</div>
+</div>
+<!-- Assistant Bubble (Dexter) - Rich Content -->
+<div class="flex gap-sm max-w-[85%] md:max-w-[70%] items-end mt-sm">
+<div class="w-8 h-8 rounded-full flex-shrink-0 bg-surface-subtle flex items-center justify-center overflow-hidden border border-outline-variant">
+<img alt="Dexter Assistant Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAU0pHbfFdi2FG0uRcbBQNkef01BI70HldOBnw9yKsQE9PsO6SQMnH9mnN6eef998gHMYuBAhS14gz_5jPuF25svFQISHL0-VvM-jibROKg41os9kQbJo2i-uqIGnjI2WnOtuZm8aV3U-j3qgRWbqAs5bQu6dwc9KBeDG3HUU7Al7ufP7fpiZWPzi12D106vGyEWCYXkAcl70DF0FPVtFiBfpAU8Bm0n-WTz4_XHB1iwa-lsUK5PIFFA2lVCCNJt1jjE6k">
+</div>
+<div class="bg-surface-subtle border border-[#F1F5F9] rounded-[20px] rounded-bl-sm p-md text-text-primary font-body-md text-body-md flex flex-col gap-sm relative group hover:border-primary hover:shadow-[0_10px_30px_rgba(0,0,0,0.04)] transition-all">
+<p class="">Bien sûr ! Imagine que tu essaies de prendre en photo une voiture de course très rapide dans la nuit, en utilisant un flash.</p>
+<ul class="list-disc pl-md text-text-secondary space-y-2 mt-xs">
+<li class="">Si tu veux une photo nette (position précise), tu as besoin d'un flash très court. Mais alors, tu ne vois pas la voiture bouger (vitesse inconnue).</li>
+<li class="">Si tu laisses l'objectif ouvert longtemps, tu vois une traînée lumineuse (tu connais la vitesse), mais la voiture est floue (position imprécise).</li>
+</ul>
+<div class="bg-surface-base border border-outline-variant rounded-lg p-sm mt-xs flex items-center gap-sm">
+<div class="w-10 h-10 rounded-md bg-surface-tinted flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="science">science</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-text-primary">Δx · Δp ≥ h/4π</p>
+<p class="font-label-sm text-label-sm text-text-tertiary">Formule mathématique fondamentale</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Typing Indicator (Simulated) -->
+<div class="flex gap-sm max-w-[85%] md:max-w-[70%] items-end mt-xs opacity-60">
+<div class="w-8 h-8 rounded-full flex-shrink-0 bg-surface-subtle flex items-center justify-center overflow-hidden border border-outline-variant">
+<img alt="Dexter Assistant Avatar" class="w-full h-full object-cover grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVd78BxMEQuGfpqsTKElk_Oi9BdzXyictuU19lprZgZK3_rGNajXZKuVG_tvsQeRdKWk5gJkfeMcTV_c1nc9Hg2xw0VYMoOD_BVvxvnrSo7gfFi2Q8HZGVXxE6ZpgbNNF7LaYW1VvvB4oeFZ1C4CJofzv63u3hlbvfkRAukWIkQKx36MxfeBM8OeRXrPqMmq1uDG5WbLggtuzgj-ZWAnjj_bPhBvpoOjpq3tNt7zCmnpydTN8IARCCQw1n64iah4aMR4g">
+</div>
+<div class="bg-surface-subtle border border-[#F1F5F9] rounded-[20px] rounded-bl-sm p-sm text-text-secondary flex gap-1 items-center h-[42px] px-4">
+<span class="w-1.5 h-1.5 bg-text-tertiary rounded-full animate-pulse"></span>
+<span class="w-1.5 h-1.5 bg-text-tertiary rounded-full animate-pulse delay-75"></span>
+<span class="w-1.5 h-1.5 bg-text-tertiary rounded-full animate-pulse delay-150"></span>
+</div>
+</div>
+</div>
+<!-- Fixed Input Area -->
+<div class="absolute bottom-0 w-full p-4 md:p-margin bg-gradient-to-t from-surface-container-lowest via-surface-container-lowest to-transparent pb-md md:pb-margin z-20">
+<div class="max-w-3xl mx-auto w-full relative">
+<!-- Quick Suggestion Chips -->
+<div class="absolute -top-12 left-0 w-full flex gap-sm overflow-x-auto pb-2 no-scrollbar px-2">
+<button class="bg-domain-blue/10 border border-domain-blue/20 text-domain-blue font-label-sm text-label-sm px-sm py-xs rounded-full whitespace-nowrap hover:bg-domain-blue/20 transition-colors">
+                        Exemples concrets
+                    </button>
+<button class="bg-domain-orange/10 border border-domain-orange/20 text-domain-orange font-label-sm text-label-sm px-sm py-xs rounded-full whitespace-nowrap hover:bg-domain-orange/20 transition-colors">
+                        Exercice pratique
+                    </button>
+</div>
+<div class="bg-[#F1F0FB] rounded-xl flex items-end p-xs chat-input-focus transition-all">
+<button class="p-sm text-text-secondary hover:text-primary rounded-lg transition-colors shrink-0 mb-1" title="Attach file">
+<span class="material-symbols-outlined" data-icon="attach_file">attach_file</span>
+</button>
+<textarea class="flex-1 bg-transparent border-none focus:ring-0 resize-none max-h-32 min-h-[44px] py-sm px-sm text-text-primary font-body-md text-body-md placeholder:text-text-tertiary" placeholder="Pose ta question à Dexter..." rows="1"></textarea>
+<button class="p-sm text-on-primary bg-primary rounded-lg hover:bg-primary-container transition-colors shrink-0 mb-1 shadow-sm flex items-center justify-center w-10 h-10" title="Send message">
+<span class="material-symbols-outlined" data-icon="send">send</span>
+</button>
+</div>
+<div class="text-center mt-2">
+<span class="font-label-sm text-[10px] text-text-tertiary">Dexter peut faire des erreurs. Vérifie les informations importantes.</span>
+</div>
+</div>
+</div>
+</main>
+
+
+</body></html>

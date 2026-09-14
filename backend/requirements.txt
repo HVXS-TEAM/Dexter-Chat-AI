@@ -1,0 +1,37 @@
+# Dexter backend — Python dependencies (Phase 0)
+# Deliberately unpinned (latest compatible) except where a known issue
+# requires a pin. See bcrypt below.
+
+# Web framework
+fastapi
+uvicorn[standard]
+
+# Database
+sqlalchemy
+alembic
+psycopg2-binary
+pgvector
+
+# Validation & settings
+pydantic
+pydantic-settings
+python-dotenv
+httpx
+
+# Auth (declared in Phase 0, used in later phases)
+python-jose[cryptography]
+passlib[bcrypt]
+# Pinned: passlib 1.7.4 emits a warning with bcrypt >= 4.1
+bcrypt==4.0.1
+
+# LLM providers (OpenAI-compatible API calls)
+httpx
+python-multipart
+
+# RAG / embeddings
+sentence-transformers
+PyPDF2
+python-docx
+python-pptx
+Pillow
+pytesseract
