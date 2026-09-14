@@ -5,14 +5,25 @@ type Theme = 'dark' | 'light'
 type ThemeContextValue = {
   theme: Theme
   toggleTheme: () => void
+  setTheme: (theme: Theme) => void
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
 const storageKey = 'dexter-theme'
 
+function getThemeFromTime(): Theme {
+  const hour = new Date().getHours()
+  // Jour : 6h-18h → clair, Nuit : 18h-6h → sombre
+  return hour >= 6 && hour < 18 ? 'light' : 'dark'
+}
+
 function getInitialTheme(): Theme {
   const storedTheme = window.localStorage.getItem(storageKey)
-  return storedTheme === 'light' ? 'light' : 'dark'
+  if (storedTheme === 'dark' || storedTheme === 'light') {
+    return storedTheme
+  }
+  // Pas de préférence → thème basé sur l'heure
+  return getThemeFromTime()
 }
 
 type ThemeProviderProps = {
@@ -20,18 +31,26 @@ type ThemeProviderProps = {
 }
 
 export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>(getInitialTheme)
+  const [theme, setThemeState] = useState<Theme>(getInitialTheme)
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
     window.localStorage.setItem(storageKey, theme)
   }, [theme])
 
-  function toggleTheme() {
-    setTheme((currentTheme) => (currentTheme === 'dark' ? 'light' : 'dark'))
+  function setTheme(newTheme: Theme) {
+    setThemeState(newTheme)
   }
 
-  return <ThemeContext.Provider value={{ theme, toggleTheme }}>{children}</ThemeContext.Provider>
+  function toggleTheme() {
+    setThemeState((currentTheme) => (currentTheme === 'dark' ? 'light' : 'dark'))
+  }
+
+  return (
+    <ThemeContext.Provider value={{ theme, toggleTheme, setTheme }}>
+      {children}
+    </ThemeContext.Provider>
+  )
 }
 
 export function useTheme(): ThemeContextValue {

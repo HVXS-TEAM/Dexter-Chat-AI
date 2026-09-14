@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from string import Template
 
 from app.config import settings
@@ -19,6 +20,27 @@ def generate_answer(
     rag_context: str | None = None,
 ) -> str:
     """Generate a pedagogical answer using the classified domain prompt."""
+    prompt = _build_generation_prompt(question, classification, user, history_context, rag_context)
+    provider = get_llm_provider()
+    response = provider.chat(
+        messages=[{"role": "system", "content": prompt}],
+        temperature=0.3,
+        max_tokens=1200,
+        model=settings.llm_model_generation,
+    )
+    if not response.strip():
+        raise ValueError("LLM returned an empty answer.")
+    return response.strip()
+
+
+def _build_generation_prompt(
+    question: str,
+    classification: ClassificationResult,
+    user: User,
+    history_context: str | None = None,
+    rag_context: str | None = None,
+) -> str:
+    """Build the shared generation prompt used by sync and streaming paths."""
     if not classification.domaine:
         raise ValueError("A configured domain is required for answer generation.")
 
@@ -40,14 +62,24 @@ def generate_answer(
             profil="étudiant" if user.role == "etudiant" else "professeur",
         )
         prompt = f"{prompt}\n\n{rag_prompt}"
+    return prompt
 
+
+async def _generate_stream(
+    question: str,
+    classification: ClassificationResult,
+    user: User,
+    history_context: str | None = None,
+    rag_context: str | None = None,
+) -> AsyncIterator[str]:
+    """Yield pedagogical answer fragments from the configured LLM provider."""
+    prompt = _build_generation_prompt(question, classification, user, history_context, rag_context)
     provider = get_llm_provider()
-    response = provider.chat(
+    fragments = provider.stream(
         messages=[{"role": "system", "content": prompt}],
         temperature=0.3,
         max_tokens=1200,
         model=settings.llm_model_generation,
     )
-    if not response.strip():
-        raise ValueError("LLM returned an empty answer.")
-    return response.strip()
+    for fragment in fragments:
+        yield fragment

@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+import json
+from collections.abc import AsyncIterator
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
+from fastapi.responses import StreamingResponse
 
 from app.auth.dependencies import get_current_user
 from app.config import settings
@@ -52,6 +56,111 @@ def _closest_domain(question: str, classification: ClassificationResult) -> dict
         if score > 0:
             candidates.append((score, domain))
     return max(candidates, key=lambda item: item[0])[1] if candidates else None
+
+
+def _sse_event(payload: dict[str, str]) -> str:
+    """Serialize one payload as a Server-Sent Event."""
+    return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+
+async def _stream_chat_events(
+    payload: ChatMessageRequest,
+    current_user: User,
+    db: Session,
+) -> AsyncIterator[str]:
+    """Classify, stream, persist, and serialize one chat response."""
+    try:
+        classification = classifier.classify(payload.question, payload.historique)
+        if classification.intention == "calcul":
+            yield _sse_event({"type": "error", "message": "Le mode calcul reste synchrone."})
+            return
+        domain_config = get_domain(classification.domaine) if classification.domaine else None
+        needs_referentiel = bool(
+            domain_config
+            and domain_config.get("referentiels")
+            and not classification.referentiel
+        )
+        if classification.besoin_precision or not classification.domaine or needs_referentiel:
+            yield _sse_event({"type": "error", "message": "Une précision est nécessaire avant de répondre."})
+            return
+
+        history_context = payload.historique
+        conversation = None
+        if payload.conversation_id is not None:
+            conversation = get_conversation(db, payload.conversation_id, current_user.id)
+            if conversation is None:
+                yield _sse_event({"type": "error", "message": "Conversation introuvable."})
+                return
+            history_context = build_conversation_context(db, conversation)
+            add_message(
+                db,
+                conversation.id,
+                "user",
+                payload.question,
+                domaine_detecte=classification.domaine,
+                sous_theme_detecte=classification.sous_theme,
+                mode_utilise="explique_moi",
+            )
+
+        rag_context = None
+        if conversation is not None:
+            rag_chunks = rag_service.search_documents(
+                db,
+                conversation.id,
+                payload.question,
+                limit=settings.rag_max_chunks,
+                min_score=settings.rag_min_score,
+            )
+            if rag_chunks:
+                rag_context = rag_service.format_chunks_context(rag_chunks)
+
+        complete_answer = ""
+        async for fragment in chat_service._generate_stream(
+            payload.question,
+            classification,
+            current_user,
+            history_context,
+            rag_context,
+        ):
+            complete_answer += fragment
+            yield _sse_event({"type": "token", "content": fragment})
+
+        if not complete_answer.strip():
+            raise ValueError("LLM returned an empty answer.")
+
+        if conversation is not None:
+            add_message(
+                db,
+                conversation.id,
+                "assistant",
+                complete_answer.strip(),
+                domaine_detecte=classification.domaine,
+                sous_theme_detecte=classification.sous_theme,
+                mode_utilise="mes_cours" if rag_context else "explique_moi",
+            )
+        yield _sse_event({"type": "done"})
+    except Exception:
+        yield _sse_event({"type": "error", "message": "La génération de la réponse a échoué."})
+
+
+@router.post("/stream")
+def chat_stream(
+    payload: ChatMessageRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> StreamingResponse:
+    """Stream a non-calculation chat answer as Server-Sent Events."""
+    return StreamingResponse(
+        _stream_chat_events(payload, current_user, db),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
+
 @router.post("/message", response_model=ChatMessageResponse)
 def chat_message(
     payload: ChatMessageRequest,

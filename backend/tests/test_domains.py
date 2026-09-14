@@ -12,8 +12,9 @@ def test_get_domains_returns_catalogue():
     assert response.status_code == 200, response.text
     data = response.json()
     ids = [item["id"] for item in data]
-    assert "comptabilite" in ids
-    assert "finance" in ids
+    expected_ids = ["comptabilite", "finance", "marketing", "statistique", "banque", "business", "management"]
+    for domain_id in expected_ids:
+        assert domain_id in ids, f"domaine manquant: {domain_id}"
     for item in data:
         assert isinstance(item["label"], str) and item["label"]
         assert isinstance(item["keywords"], list)

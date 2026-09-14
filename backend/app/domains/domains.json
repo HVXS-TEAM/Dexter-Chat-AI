@@ -48,5 +48,40 @@
       "financement"
     ],
     "referentiels": ["IFRS", "Bâle III", "PCAOB"]
+  },
+  {
+    "id": "marketing",
+    "label": "Marketing",
+    "keywords": ["marketing", "mix marketing", "4p", "etude de marche", "comportement consommateur", "segmentation", "positionnement", "marketing digital", "strategie de marque", "publicite", "communication"],
+    "sous_themes": ["étude de marché", "comportement consommateur", "mix marketing", "marketing digital", "stratégie de marque"],
+    "referentiels": ["4P", "STP", "AIDA"]
+  },
+  {
+    "id": "statistique",
+    "label": "Statistique",
+    "keywords": ["statistique", "probabilites", "tests d'hypotheses", "regression", "analyse de donnees", "moyenne", "variance", "ecart type", "correlation", "loi normale", "echantillonnage"],
+    "sous_themes": ["statistique descriptive", "probabilités", "tests d'hypothèses", "régression", "analyse de données"],
+    "referentiels": []
+  },
+  {
+    "id": "banque",
+    "label": "Banque",
+    "keywords": ["banque", "operations bancaires", "analyse de credit", "gestion des risques", "taux d'interet", "reglementation", "pret", "epargne", "monnaie", "marche interbancaire", "banque centrale"],
+    "sous_themes": ["opérations bancaires", "analyse de crédit", "gestion des risques", "taux d'intérêt", "réglementation"],
+    "referentiels": ["Bâle III", "Bâle IV"]
+  },
+  {
+    "id": "business",
+    "label": "Business",
+    "keywords": ["business", "strategie d'entreprise", "modeles economiques", "entrepreneuriat", "analyse concurrentielle", "plan d'affaires", "startup", "innovation", "croissance", "fusion acquisition"],
+    "sous_themes": ["stratégie d'entreprise", "modèles économiques", "entrepreneuriat", "analyse concurrentielle", "plan d'affaires"],
+    "referentiels": []
+  },
+  {
+    "id": "management",
+    "label": "Management",
+    "keywords": ["management", "gestion organisationnelle", "leadership", "gestion de projet", "ressources humaines", "culture d'entreprise", "motivation", "gestion du changement", "performance", "equipe"],
+    "sous_themes": ["gestion organisationnelle", "leadership", "gestion de projet", "ressources humaines", "culture d'entreprise"],
+    "referentiels": []
   }
 ]

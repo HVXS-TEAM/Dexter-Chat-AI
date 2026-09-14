@@ -1,4 +1,5 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
+import { useAuth } from '../auth'
 import { useTheme } from '../theme/ThemeProvider'
 
 type NavigationItem = {
@@ -46,8 +47,13 @@ function NavigationLink({ item }: { item: NavigationItem }) {
 
 export default function Layout() {
   const { theme, toggleTheme } = useTheme()
+  const { user, isAuthenticated, logout } = useAuth()
   const themeIcon = theme === 'dark' ? 'light_mode' : 'dark_mode'
   const themeLabel = theme === 'dark' ? 'Activer le thème clair' : 'Activer le thème sombre'
+
+  const userInitials = user
+    ? user.email.slice(0, 2).toUpperCase()
+    : ''
 
   return (
     <div className="app-shell">
@@ -67,6 +73,25 @@ export default function Layout() {
         </nav>
 
         <div className="sidebar-footer">
+          {isAuthenticated ? (
+            <div className="user-block">
+              <div className="user-avatar" aria-label="Avatar utilisateur">
+                {userInitials}
+              </div>
+              <div className="user-info">
+                <span className="user-email">{user?.email}</span>
+                <button className="logout-button" type="button" onClick={logout} aria-label="Se déconnecter">
+                  <span className="material-symbols-outlined" aria-hidden="true">logout</span>
+                  <span>Déconnexion</span>
+                </button>
+              </div>
+            </div>
+          ) : (
+            <Link className="login-button" to="/login">
+              <span className="material-symbols-outlined" aria-hidden="true">login</span>
+              <span>Se connecter</span>
+            </Link>
+          )}
           <button className="upgrade-button" type="button" aria-disabled="true" disabled>
             Upgrade to Pro
           </button>

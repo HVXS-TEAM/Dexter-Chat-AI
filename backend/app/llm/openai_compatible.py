@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import httpx
+import json
+from collections.abc import Iterator
 
 from app.config import settings
 from app.llm.provider import LLMProvider
@@ -54,6 +56,51 @@ class OpenAICompatibleProvider(LLMProvider):
 
         message = choices[0].get("message", {})
         return str(message.get("content", ""))
+
+    def stream(
+        self,
+        messages: list[dict[str, str]],
+        temperature: float = 0.1,
+        max_tokens: int = 512,
+        model: str | None = None,
+    ) -> Iterator[str]:
+        """Yield content fragments from an OpenAI-compatible SSE response."""
+        if not self.api_key:
+            raise ValueError("LLM API key is not configured.")
+
+        payload = {
+            "model": model or self.model,
+            "messages": messages,
+            "temperature": temperature,
+            "max_tokens": max_tokens,
+            "stream": True,
+        }
+        headers = {
+            "Authorization": f"Bearer {self.api_key}",
+            "Content-Type": "application/json",
+        }
+
+        with httpx.Client(timeout=30.0) as client:
+            with client.stream(
+                "POST",
+                f"{self.base_url}/chat/completions",
+                headers=headers,
+                json=payload,
+            ) as response:
+                response.raise_for_status()
+                for line in response.iter_lines():
+                    if not line or not line.startswith("data:"):
+                        continue
+                    data = line.removeprefix("data:").strip()
+                    if data == "[DONE]":
+                        break
+                    chunk = json.loads(data)
+                    choices = chunk.get("choices", [])
+                    if not choices:
+                        continue
+                    content = choices[0].get("delta", {}).get("content")
+                    if content:
+                        yield str(content)
 
 
 _provider_singleton: OpenAICompatibleProvider | None = None

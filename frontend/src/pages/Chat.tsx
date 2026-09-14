@@ -85,28 +85,106 @@ export default function Chat() {
       role: 'user',
       content: trimmedQuestion,
     }
+    const assistantMessageId = `${Date.now()}-assistant`
+    const assistantMessage: AssistantMessage = {
+      id: assistantMessageId,
+      role: 'assistant',
+      content: '',
+      response: {
+        reponse: '',
+        mode: 'explique_moi',
+        domaine: null,
+        sous_theme: null,
+        referentiel: null,
+        clarification_demandee: false,
+        question_sous_themes: [],
+        referentiels_proposes: null,
+        conversation_id: conversationId,
+        calcul_result: null,
+        champs_manquants: [],
+      },
+    }
 
-    setMessages((currentMessages) => [...currentMessages, userMessage])
+    setMessages((currentMessages) => [...currentMessages, userMessage, assistantMessage])
     setQuestion('')
     setErrorMessage(null)
     setIsLoading(true)
 
     try {
-      const response = await axios.post<ChatResponse>(`${apiUrl}/chat/message`, {
-        question: trimmedQuestion,
-        conversation_id: conversationId,
+      const response = await fetch(`${apiUrl}/chat/stream`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: trimmedQuestion, conversation_id: conversationId }),
       })
-      const assistantMessage: AssistantMessage = {
-        id: `${Date.now()}-assistant`,
-        role: 'assistant',
-        content: response.data.reponse ?? 'Dexter demande une précision avant de continuer.',
-        response: response.data,
+
+      if (!response.ok) {
+        const message = response.status === 401 || response.status === 403
+          ? 'Vous devez être connecté pour utiliser le chat Dexter.'
+          : response.status === 502
+            ? 'Dexter ne peut pas répondre pour le moment. Réessayez dans quelques instants.'
+            : 'Impossible d’envoyer votre message. Vérifiez la connexion au serveur et réessayez.'
+        throw new Error(message)
       }
 
-      setMessages((currentMessages) => [...currentMessages, assistantMessage])
-      setConversationId(response.data.conversation_id)
+      if (!response.body) {
+        throw new Error('Le serveur n’a pas fourni de flux de réponse.')
+      }
+
+      const reader = response.body.getReader()
+      const decoder = new TextDecoder()
+      let bufferedLine = ''
+      let streamDone = false
+
+      while (!streamDone) {
+        const { value, done } = await reader.read()
+        bufferedLine += decoder.decode(value ?? new Uint8Array(), { stream: !done })
+        const lines = bufferedLine.split('\n')
+        bufferedLine = lines.pop() ?? ''
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) {
+            continue
+          }
+
+          const event = JSON.parse(line.slice(6)) as {
+            type: 'token' | 'done' | 'error'
+            content?: string
+            message?: string
+            conversation_id?: number | null
+          }
+
+          if (event.conversation_id !== undefined) {
+            setConversationId(event.conversation_id)
+          }
+
+          if (event.type === 'token' && event.content) {
+            setMessages((currentMessages) => currentMessages.map((message) => (
+              message.id === assistantMessageId && message.role === 'assistant'
+                ? { ...message, content: message.content + event.content }
+                : message
+            )))
+          }
+
+          if (event.type === 'error') {
+            setMessages((currentMessages) => currentMessages.filter((message) => message.id !== assistantMessageId))
+            setErrorMessage(event.message ?? 'La génération de la réponse a échoué.')
+            streamDone = true
+            break
+          }
+
+          if (event.type === 'done') {
+            streamDone = true
+            break
+          }
+        }
+
+        if (done) {
+          streamDone = true
+        }
+      }
     } catch (error: unknown) {
-      setErrorMessage(getErrorMessage(error))
+      setMessages((currentMessages) => currentMessages.filter((message) => message.id !== assistantMessageId))
+      setErrorMessage(error instanceof Error ? error.message : getErrorMessage(error))
     } finally {
       setIsLoading(false)
     }
