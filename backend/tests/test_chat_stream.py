@@ -335,6 +335,8 @@ def test_chat_stream_calcul_sends_meta_before_verified_tokens(monkeypatch):
     assert events[0]["clarification_demandee"] is False
     assert events[0]["champs_manquants"] == []
     assert events[0]["calcul_result"]["result"] == 200.0
+    # Decision 1A : le meta expose la devise effectivement utilisee (« € » ici).
+    assert events[0]["calcul_result"]["display_currency"] == "€"
     assert events[1] == {"type": "token", "content": "TVA de 200 EUR."}
     assert events[2] == {"type": "done", "message_id": 22, "conversation_id": 42}
     assert "Resultat de calcul verifie" in seen["history"]

@@ -92,6 +92,7 @@ class TVACalculator(DomainCalculator):
             language=input_.language,
             label="TVA collectée",
             unit=devise,
+            display_currency=devise,
             pedagogical_note=self._pedagogical_note(taux, input_),
         )
 
@@ -138,6 +139,7 @@ class TVACalculator(DomainCalculator):
             result=calculer_montant_ttc(input_.amount_ht, taux),
             label="Montant TTC",
             unit=devise,
+            display_currency=devise,
             pedagogical_note=self._pedagogical_note(taux, input_),
         )
 

@@ -318,6 +318,7 @@ def test_chat_calcul_unit_follows_question_currency(monkeypatch):
     body = response.json()
     assert body["calcul_result"]["result"] == 200.0
     assert body["calcul_result"]["unit"] == "FCFA"
+    assert body["calcul_result"]["display_currency"] == "FCFA"
     assert "200.0 FCFA" in body["reponse"] or "FCFA" in body["reponse"]
 
 
@@ -336,6 +337,7 @@ def test_chat_calcul_unit_keeps_calculator_default_without_currency(monkeypatch)
     body = response.json()
     assert body["calcul_result"]["result"] == 200.0
     assert body["calcul_result"]["unit"] == "€"
+    assert body["calcul_result"]["display_currency"] == "€"
 
 
 def test_chat_calcul_credit_note_follows_question_currency(monkeypatch):
@@ -357,3 +359,4 @@ def test_chat_calcul_credit_note_follows_question_currency(monkeypatch):
     assert "FCFA" in note
     assert "€" not in note
     assert body["calcul_result"]["unit"] == "FCFA"
+    assert body["calcul_result"]["display_currency"] == "FCFA"

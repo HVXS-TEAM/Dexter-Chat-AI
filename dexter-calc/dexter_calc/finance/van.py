@@ -125,6 +125,7 @@ class VANChatCalculator(DomainCalculator):
             result=van,
             label="VAN",
             unit=devise,
+            display_currency=devise,
             pedagogical_note=f"VAN = {van} {devise}. ICA = {ica}.",
             extra={"flux_initial": flux_initial, "flows": flows, "van": van, "ica": ica},
         )

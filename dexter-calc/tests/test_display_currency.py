@@ -23,6 +23,7 @@ def test_credit_unit_and_note_follow_display_currency():
     assert out.unit == "FCFA"
     assert "600.0 FCFA" in out.pedagogical_note
     assert "€" not in out.pedagogical_note
+    assert out.display_currency == "FCFA"
 
 
 def test_credit_derive_note_follows_display_currency():
@@ -37,6 +38,7 @@ def test_credit_derive_note_follows_display_currency():
     )
     assert out.unit == "FCFA"
     assert "€" not in out.pedagogical_note
+    assert out.display_currency == "FCFA"
 
 
 def test_tva_unit_follows_display_currency():
@@ -46,6 +48,7 @@ def test_tva_unit_follows_display_currency():
         )
     )
     assert out.unit == "XOF"
+    assert out.display_currency == "XOF"
 
 
 def test_van_note_follows_display_currency():
@@ -60,6 +63,7 @@ def test_van_note_follows_display_currency():
     )
     assert out.unit == "FCFA"
     assert "€" not in out.pedagogical_note
+    assert out.display_currency == "FCFA"
 
 
 def test_amortissement_notes_follow_display_currency():
@@ -82,6 +86,7 @@ def test_amortissement_notes_follow_display_currency():
     ):
         assert output.unit == "FCFA"
         assert "€" not in output.pedagogical_note
+        assert output.display_currency == "FCFA"
 
 
 def test_default_unit_stays_euro_without_display_currency():
@@ -91,7 +96,9 @@ def test_default_unit_stays_euro_without_display_currency():
     )
     assert credit.unit == "€"
     assert "€" in credit.pedagogical_note
+    assert credit.display_currency == "€"
     tva = TVACalculator().calc(
         CalculationInput(domain="comptabilite", amount_ht=1000, tau=0.2)
     )
     assert tva.unit == "€"
+    assert tva.display_currency == "€"

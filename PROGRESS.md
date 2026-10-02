@@ -1439,6 +1439,9 @@ absent des `meta` non-calcul → clé ajoutée avec valeur `None`. Aucune nouvel
 
 ### Menaces et observations signalées (règles 6 et 8 — rien de masqué, rien hors périmètre)
 
+> **Mise à jour cycle 7 (02/10/2026)** : les 4 observations de cette section ont été arbitrées par
+> l'utilisateur (option A) et traitées — voir « Cycle 7 » plus bas.
+
 - **Générateurs one-shot** : `dexter-calc\write_modules.py` et `dexter-calc\write_credit_bon.py` contiennent
   encore des notes « € » hardcodées et un chemin absolu `E:\` mort — **non modifiés** (règle 8 : aucune
   référence dans le code actif, exécution impossible). **Risque** : si quelqu'un les relançait, ils
@@ -1455,7 +1458,82 @@ absent des `meta` non-calcul → clé ajoutée avec valeur `None`. Aucune nouvel
   **non corrigé** (hors périmètre validé) — à arbitrer.
 
 **Statut : cycle 6 appliqué et vérifié (114 tests backend + 13 dexter-calc + harnais 21/21) —
-VALIDATION UTILISATEUR EN ATTENTE (règle 11)** ; commit de clôture en attente (discipline 3C+A,
-arbre à vérifier avant).
+commité `79c206b` (arbre propre)** ; arbitrage utilisateur reçu le 02/10/2026 sur les 4 observations
+ci-dessous → traitées au cycle 7.
+
+---
+
+## Cycle 7 — 02/10/2026 : clôture des 4 observations du cycle 6 (arbitrage « A »)
+
+**Périmètre validé (règle 1 : autorisation explicite « Je valide l'action sur les points signalés » ;
+arbitrage option A = tout supprimer)** : les 4 observations résiduelles du cycle 6 — (1) doublon
+`dexter_calc/` racine ; (2) `calcul_result.display_currency` toujours `None` ; (3) générateurs one-shot
+dangereux ; (4) `van_addition.py` mort. Aucune nouvelle dépendance (règle 14), rien hors de ce périmètre
+touché (règle 8).
+
+### Lot 1 — suppression du doublon `dexter_calc/` racine
+
+- **Preuves avant suppression** : unique fichier `dexter_calc\core\exceptions.py` = **ancienne copie** des
+  exceptions (sans le paramètre `code` exigé par le code actif), tracké uniquement par le commit initial
+  `a326273`, sans `__init__.py` donc jamais importable comme paquet, et il prenait le dessus sur le vrai
+  package quand pytest tournait depuis la racine ;
+- `git rm -r dexter_calc` → l'import depuis la racine résout désormais le canonique
+  `dexter-calc\dexter_calc\...` (vérifié : construction `CalculationError(..., code=...)` OK) ;
+- **Vérification** : `pytest dexter-calc\tests` lancé **depuis la racine** (cassé au cycle 6) → **13 passed**.
+
+### Lot 2 — `display_currency` renseigné (racine + filet, même duo que le cycle 6)
+
+- **Racine — 7 sites `unit=devise` (exhaustivité vérifiée par recherche, zéro 8ᵉ site)** :
+  `banque\credit_bon.py` ×2 (`calc` + `derive`), `comptabilite\tva.py` ×2, `finance\amortissement.py` ×2,
+  `finance\van.py` ×1 (`run`) → `display_currency=devise` ajouté à chaque `CalculationOutput` — la devise
+  réellement affichée est désormais lisible dans le champ dédié (défaut « € » sans devise explicite).
+  `van.derive` (ICA, `unit=None`) reste `None` : indice sans devise, cohérent ;
+- **Filet backend** : `chat_calculation.py` → `calcul_result["display_currency"] = currency_label` ajouté
+  au filet décision 1A existant (commentaire mis à jour — le filet reste explicite, règle 7) ;
+- **Tests** : assertions `display_currency` ajoutées dans `dexter-calc\tests\test_display_currency.py` (7 :
+  devise explicite sur credit/tva/van/amortissement + défaut « € » sur credit et tva),
+  `backend\tests\test_chat_calcul.py` (3 : crédit FCFA, TVA FCFA, défaut « € ») et
+  `backend\tests\test_chat_stream.py` (1 : meta stream en « € ») — aucun test ajouté ni supprimé.
+
+### Lot 3 — arbitrages option A : suppressions des débris
+
+- `git rm` : `dexter-calc\write_modules.py` et `dexter-calc\write_credit_bon.py` (générateurs one-shot à
+  notes « € » hardcodées et chemin `E:\` mort ; risque : une relance après correction du chemin aurait
+  régénéré les calculateurs **sans** `display_currency`, annulant les Lots A du cycle 6 et 2 du cycle 7) ;
+- `git rm` : `dexter-calc\dexter_calc\finance\van_addition.py` (débris **non importable** : aucune ligne
+  d'import → `NameError` à l'import ; doublon du nom de classe `VANChatCalculator` de `van.py` ; s'il avait
+  été « réparé et enregistré », il aurait créé un second outil « finance/van » ambigu dans le registre —
+  `resolve()` choisit alors le premier inscrit, résultat aléatoire à la lecture) ;
+- l'historique git conserve les 3 fichiers ; vérifié après suppression :
+  `find_spec('dexter_calc.finance.van_addition') → None`, `van` et `credit_bon` importent OK.
+
+### Lot 4 — vérifications réelles
+
+- `py_compile` : **8 fichiers édités OK** ;
+- **suite backend `pytest tests -q` → 114 passed / 0 failed** (relancée après les éditions, puis après les
+  suppressions — 2 passes au vert, ~87 s) ;
+- **dexter-calc → 13 passed**, lancé **depuis la racine** (nouveau, suite au Lot 1) **et depuis `backend/`** ;
+- uvicorn **redémarré** (PID 20052 → **PID 21284**, sans `--reload`, PID dans `%TEMP%\dexter_uvicorn_pid.txt`)
+  → `GET /health = 200 {"status":"ok"}` ;
+- **harnais `%TEMP%\dexter_stream_live_check.py` étendu à 22 vérifications → 22/22 passées** :
+  - TVA : `calcul_result.display_currency = 'FCFA'` (était `None`) ;
+  - crédit : `calcul_result.display_currency = 'FCFA'` (était `None`) + note toujours en FCFA →
+    **observation « display_currency = None » CLOS** ;
+  - les 21 vérifications précédentes toujours au vert (`sous_theme_effectif`, filets, ordre des events…).
+
+### Observations restantes signalées (règles 6 et 8 — rien de masqué)
+
+- **Les 4 observations du cycle 6 sont CLOSSES** (doublon racine supprimé, `display_currency` renseigné,
+  générateurs et `van_addition.py` supprimés sur arbitrage A) ;
+- `dexter-calc\dexter_calc.egg-info\SOURCES.txt` (tracké) référence encore `van_addition.py` : artefact
+  **généré** par un build antérieur, déjà périmé (ne liste pas les tests récents) — régénéré automatiquement
+  au prochain build ; **non édité à la main** ici (règle 8) ;
+- hors périmètre, non touchés : `dexter-calc\check_registry.py`, `create_dirs.py`, `test_full.py`,
+  `check_result.txt`, `test_write.txt` (utilitaires/trace trackés, sans référence dans le code actif) —
+  à arbitrer si souhaité.
+
+**Statut : cycle 7 appliqué et vérifié (114 tests backend + 13 dexter-calc + harnais 22/22) —
+VALIDATION UTILISATEUR LE 02/10/2026 (règle 11)** ; commit de clôture effectué dans ce même commit
+(hash visible dans `git log`, non auto-référençable ici).
 
 
