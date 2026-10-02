@@ -1,2 +1,0 @@
-[console_scripts]
-dexter-calc = app.cli:app

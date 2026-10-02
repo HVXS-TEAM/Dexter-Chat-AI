@@ -1523,6 +1523,9 @@ touché (règle 8).
 
 ### Observations restantes signalées (règles 6 et 8 — rien de masqué)
 
+> **Mise à jour cycle 8 (02/10/2026)** : cette liste a été intégralement traitée (arbitrage A) —
+> voir « Cycle 8 » plus bas.
+
 - **Les 4 observations du cycle 6 sont CLOSSES** (doublon racine supprimé, `display_currency` renseigné,
   générateurs et `van_addition.py` supprimés sur arbitrage A) ;
 - `dexter-calc\dexter_calc.egg-info\SOURCES.txt` (tracké) référence encore `van_addition.py` : artefact
@@ -1533,6 +1536,60 @@ touché (règle 8).
   à arbitrer si souhaité.
 
 **Statut : cycle 7 appliqué et vérifié (114 tests backend + 13 dexter-calc + harnais 22/22) —
+VALIDATION UTILISATEUR LE 02/10/2026 (règle 11)** ; commit de clôture effectué dans ce même commit
+(hash visible dans `git log`, non auto-référençable ici).
+
+---
+
+## Cycle 8 — 02/10/2026 : nettoyage des résidus (5 utilitaires/trace + artefacts `egg-info`)
+
+**Périmètre validé (règle 1 : autorisation « continuons avec les résidus » ; arbitrage utilisateur
+« A » = tout supprimer + ligne gitignore)** : la liste des restants tracée en fin de cycle 7. Aucune
+nouvelle dépendance (règle 14), aucun code exécutable de produit touché (règle 8).
+
+### Enquête préalable (lecture seule, avant toute suppression)
+
+- **Zéro référence dans le code actif** pour les 5 fichiers (recherche sur 388 fichiers : seules
+  occurrences = cette note PROGRESS et `check_result.txt` qui mentionne `check_registry.py`) ;
+- tous trackés **depuis le commit initial `a326273` uniquement**, jamais modifiés depuis ;
+- constats individuels : `create_dirs.py` → chemin absolu mort `E:\…` (autre drive) qui recréerait des
+  `__init__.py` vides ; `test_full.py` → doublon de démo **et buggé** (ligne 3 joint
+  `…\dexter-calc\dexter-calc`, path inexistant) ; `check_result.txt` → trace d'`ImportError` ancienne ;
+  `test_write.txt` → « test » ; `check_registry.py` → redondant avec la suite pytest (+ son
+  `sys.path.insert` maison) ;
+- **6 fichiers** `dexter_calc.egg-info/` étaient trackés (pas seulement `SOURCES.txt`) : artefacts
+  setuptools périmés (ne listent ni les tests ni les fichiers supprimés au cycle 7) ;
+- install éditable **moderne** confirmée dans `backend\.venv` (`__editable__.dexter_calc-0.1.0.pth` +
+  finder, aucun `*.egg-link`) → le dossier `egg-info/` n'est pas requis pour les imports.
+
+### Exécution
+
+- `git rm` des 5 fichiers + `git rm -r dexter-calc\dexter_calc.egg-info` → **11 fichiers** retirés du
+  suivi et du disque (historique git conservé) ;
+- `.gitignore` racine : ligne `*.egg-info/` ajoutée à la section `# Python` (l. 16) — ajout de structure
+  soumis avec l'option A et accepté (règle 10) : le prochain build régénérera l'egg-info **hors suivi**.
+
+### Vérifications réelles
+
+- `Test-Path dexter-calc\dexter_calc.egg-info → False` + `git check-ignore -v → .gitignore:16:*.egg-info/`
+  → artefact absent du disque **et** désormais ignoré ;
+- import venv backend : `find_spec('dexter_calc.finance.van_addition') → None`, `credit_bon` / `van`
+  importent OK ;
+- **suite backend `pytest tests -q` → 114 passed / 0 failed (78,9 s)** (après suppressions) ;
+- **dexter-calc → 13 passed**, lancé depuis la racine ;
+- uvicorn **inchangé** (aucun code édité → pas de redémarrage superflu ; PID 21284 toujours en service)
+  → `GET /health = 200 {"status":"ok"}` ;
+- **harnais live → 22/22** (`display_currency: 'FCFA'` toujours au vert) ;
+- exhaustivité : `git ls-files` ne montre **aucun** cache/pyc/env tracké ; `git ls-files dexter-calc` ne
+  contient plus que du code, des tests, `README.md` et `pyproject.toml`.
+
+### Observations restantes signalées (règles 6 et 8)
+
+- **la liste des résidus du cycle 7 est intégralement traitée** — plus aucun résidu connu ;
+- hors périmètre et non touché : `dexter-calc\app\cli.py` — **pas un résidu** : déclaré comme console
+  script officiel dans `pyproject.toml` (`dexter-calc = "app.cli:app"`, l. 12), donc potentiellement actif.
+
+**Statut : cycle 8 appliqué et vérifié (114 tests backend + 13 dexter-calc + harnais 22/22) —
 VALIDATION UTILISATEUR LE 02/10/2026 (règle 11)** ; commit de clôture effectué dans ce même commit
 (hash visible dans `git log`, non auto-référençable ici).
 
