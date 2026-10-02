@@ -82,6 +82,7 @@ class TVACalculator(DomainCalculator):
             )
 
         taux = self._resolve_taux(input_)
+        devise = input_.display_currency or self.unit
         result = CalculationOutput(
             domain=self.domain,
             sous_theme=self.sous_theme,
@@ -90,7 +91,7 @@ class TVACalculator(DomainCalculator):
             profile=input_.profile,
             language=input_.language,
             label="TVA collectée",
-            unit=self.unit,
+            unit=devise,
             pedagogical_note=self._pedagogical_note(taux, input_),
         )
 
@@ -128,6 +129,7 @@ class TVACalculator(DomainCalculator):
         if input_.amount_ht is None:
             raise CalculationError("Un montant HT est requis pour le calcul dérivé.", code="missing_amount")
         taux = self._resolve_taux(input_)
+        devise = input_.display_currency or self.unit
         return CalculationOutput(
             domain=self.domain,
             sous_theme=self.sous_theme,
@@ -135,7 +137,7 @@ class TVACalculator(DomainCalculator):
             reference_frame=input_.reference_frame or self.reference_frame,
             result=calculer_montant_ttc(input_.amount_ht, taux),
             label="Montant TTC",
-            unit=self.unit,
+            unit=devise,
             pedagogical_note=self._pedagogical_note(taux, input_),
         )
 

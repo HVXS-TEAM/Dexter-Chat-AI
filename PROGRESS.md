@@ -1,4 +1,4 @@
-# PROGRESS — Dexter Chat AI
+﻿# PROGRESS — Dexter Chat AI
 
 Fichier de suivi d'état réel du projet, mis à jour à chaque étape.
 
@@ -1385,4 +1385,77 @@ une chose à la fois :
 
 **Statut : cycle 5 appliqué et vérifié (113 tests + harnais 18/18) — VALIDATION UTILISATEUR EN ATTENTE
 (règle 11)** ; signalement 12 clos, 5/13 en discipline de suivi, décision 4A reportée.
+
+---
+
+## Cycle 6 — 02/10/2026 : clôture des 2 observations résiduelles du cycle 5 (notes € + `sous_theme_effectif`)
+
+**Périmètre validé (arbitrage utilisateur « Les deux » pour l'observation 1)** : (1) la `pedagogical_note`
+du crédit en « € » → correctif **racine dexter-calc** ET **filet backend** ; (2) `sous_theme_effectif`
+absent des `meta` non-calcul → clé ajoutée avec valeur `None`. Aucune nouvelle dépendance (règle 14).
+
+### Lot A — correctif racine dexter-calc (installé en éditable, mods actives sans réinstallation)
+
+- `core\calculator.py` : champ `display_currency: str | None = None` ajouté à `CalculationInput` ;
+- `banque\credit_bon.py` : 2 notes (`run` + `derive`) → `devise = input_.display_currency or self.unit`
+  inséré dans le texte (« Interet simple : {interet} {devise} sur … ») ;
+- `finance\amortissement.py` : 2 notes (`run` + `derive`) → 4 occurrences `{devise}` ;
+- `finance\van.py` : 1 note (`run`) → « VAN = {van} {devise} » ;
+- `comptabilite\tva.py` : 2 `unit` (`calc` + `derive`) → `devise` (sa note ne porte pas de devise) ;
+- **nouveau test** `dexter-calc\tests\test_display_currency.py` : 6 tests (credit run/derive, tva unit,
+  van, amortissement run/derive, défaut « € » préservé sans devise explicite).
+
+### Lot B — passage de la devise au calculateur + filet backend
+
+- `calculator_service.py` : `display_currency=payload.get("display_currency")` transmis à `CalculationInput` ;
+- `chat_calculation.py` (`run_deterministic_calculation`) : `_extract_currency_label(question)` extrait AVANT
+  l'appel → `payload["display_currency"]` (la devise atteint le calculateur) ; puis filet de sécurité après
+  calcul : `unit` forcé à la devise ET `pedagogical_note` débarrassée de tout « € » restant (couvre les
+  calculateurs qui ignoreraient `display_currency`) ;
+- **nouveau test** `test_chat_calcul_credit_note_follows_question_currency` : question crédit FCFA →
+  note contient « FCFA », pas « € », `unit == "FCFA"` (couvre exactement l'observation 1382).
+
+### Lot C — `sous_theme_effectif: None` dans les 2 `meta` non-calcul
+
+- `chat.py` : clé ajoutée avec commentaire décision 2A dans le meta de clarification (l.~335) ET dans le
+  meta général `explique_moi`/`mes_cours` (l.~382) ;
+- `test_chat_stream.py` : `_EXPLIQUE_META` enrichi (égalité stricte des 3 tests qui l'utilisent) +
+  assertion `sous_theme_effectif is None` dans le test clarification ET dans le test `mes_cours`.
+
+### Lot D — vérifications réelles
+
+- `py_compile` : **80 fichiers backend OK** + 6 fichiers dexter-calc OK ;
+- **suite backend `pytest tests -q` → 114 passed / 0 failed (80,9 s)** (113 + 1 nouveau test note crédit) ;
+- **dexter-calc `pytest dexter-calc\tests -q` → 13 passed** (7 TVA existants + 6 nouveaux) — lancé depuis
+  `backend/` (voir menaces ci-dessous) ;
+- uvicorn **redémarré** (anciens PID 2580/20880 arrêtés, nouveau PID 20052, sans `--reload`, PID dans
+  `%TEMP%\dexter_uvicorn_pid.txt`) → `GET /health = 200 {"status":"ok"}` ;
+- **harnais `%TEMP%\dexter_stream_live_check.py` étendu à 21 vérifications → 21/21 passées** en live :
+  - crédit : `pedagogical_note = 'Interet simple : 1200.0 FCFA sur 12 mois. Taux : 10.0%.'` + `unit: 'FCFA'`
+    → **observation 1382 CLOS** (avait « 1200.0 € sur 12 mois ») ;
+  - meta clarification (TVA sans taux) : `sous_theme_effectif` présent = `None` ;
+  - meta général (question générale) : `sous_theme_effectif` présent = `None` → **observation 1384 CLOS** ;
+  - 15 vérifications précédentes toujours au vert (filets de clarification, order meta→tokens→done, etc.).
+
+### Menaces et observations signalées (règles 6 et 8 — rien de masqué, rien hors périmètre)
+
+- **Générateurs one-shot** : `dexter-calc\write_modules.py` et `dexter-calc\write_credit_bon.py` contiennent
+  encore des notes « € » hardcodées et un chemin absolu `E:\` mort — **non modifiés** (règle 8 : aucune
+  référence dans le code actif, exécution impossible). **Risque** : si quelqu'un les relançait, ils
+  régénéreraient des modules sans `display_currency` et annuleraient le Lot A ;
+- `dexter-calc\write_credit_bon.py` / `van_addition.py` : `van_addition.py` n'est pas enregistré dans le
+  registre → hors périmètre, non modifié ;
+- **Dossier `dexter_calc/` en doublon à la racine du dépôt** (tracké par git : `dexter_calc/core/exceptions.py`,
+  sans `__init__.py`) : il interfère avec la collecte pytest **quand on lance depuis la racine**
+  (`ModuleNotFoundError: dexter_calc.core.calculator`). La suite passe en lançant depuis `backend/` (cwd des
+  cycles précédents). **Non supprimé** (règle 8) — à arbitrer par l'utilisateur ;
+- **Nouveau (constat live)** : `calcul_result.display_currency` reste `None` dans le meta alors que la devise
+  est FCFA — le champ `CalculationOutput.display_currency` (préexistant) n'est jamais renseigné par les
+  calculateurs. Cosmétique (unité et note sont correctes) mais potentiellement trompeur à la lecture ;
+  **non corrigé** (hors périmètre validé) — à arbitrer.
+
+**Statut : cycle 6 appliqué et vérifié (114 tests backend + 13 dexter-calc + harnais 21/21) —
+VALIDATION UTILISATEUR EN ATTENTE (règle 11)** ; commit de clôture en attente (discipline 3C+A,
+arbre à vérifier avant).
+
 

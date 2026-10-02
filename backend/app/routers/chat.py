@@ -330,6 +330,9 @@ async def _stream_chat_events(
                     "intention": classification.intention,
                     "domaine": classification.domaine,
                     "sous_theme": classification.sous_theme,
+                    # Décision 2A : clé présente sur TOUTES les émissions meta,
+                    # None ici car aucune résolution de calcul n'a eu lieu.
+                    "sous_theme_effectif": None,
                     "referentiel": classification.referentiel,
                     "clarification_demandee": True,
                     "question_sous_themes": classification.question_sous_themes
@@ -374,6 +377,9 @@ async def _stream_chat_events(
                 "intention": classification.intention,
                 "domaine": classification.domaine,
                 "sous_theme": classification.sous_theme,
+                # Décision 2A : clé présente sur TOUTES les émissions meta,
+                # None ici (aucun calcul — seule la classification s'applique).
+                "sous_theme_effectif": None,
                 "referentiel": classification.referentiel,
                 "clarification_demandee": False,
                 "champs_manquants": [],

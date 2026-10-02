@@ -336,3 +336,24 @@ def test_chat_calcul_unit_keeps_calculator_default_without_currency(monkeypatch)
     body = response.json()
     assert body["calcul_result"]["result"] == 200.0
     assert body["calcul_result"]["unit"] == "€"
+
+
+def test_chat_calcul_credit_note_follows_question_currency(monkeypatch):
+    """Observation 1382 : la note pedagogique du credit affiche la devise
+    ecrite dans la question (FCFA), jamais le « € » hardcode par defaut."""
+    def generate(question, classification, user, history_context=None):
+        return "L'interet simple est de 600 FCFA."
+
+    response = _post(
+        "Calcule les interets d'un credit de 12000 FCFA a 5% sur 12 mois",
+        _calc_classification(domaine="banque", sous_theme="credit"),
+        generate,
+        monkeypatch,
+    )
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["mode"] == "calcul"
+    note = body["calcul_result"]["pedagogical_note"]
+    assert "FCFA" in note
+    assert "€" not in note
+    assert body["calcul_result"]["unit"] == "FCFA"

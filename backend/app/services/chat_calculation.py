@@ -352,6 +352,14 @@ def run_deterministic_calculation(
     if missing:
         return "missing_params", None, missing, None
 
+    # The question's explicit currency is forwarded to dexter-calc (decision 1A
+    # root fix) so the calculators format their unit AND pedagogical notes with
+    # it, then re-applied below as a safety net for any calculator that ignores
+    # display_currency (regle 7: the fallback is labelled, not hidden).
+    currency_label = _extract_currency_label(question)
+    if currency_label is not None:
+        payload["display_currency"] = currency_label
+
     domaine = classification.domaine or ""
     try:
         calcul_result = calculator_service.calculate(domaine, payload)
@@ -385,12 +393,15 @@ def run_deterministic_calculation(
     except Exception as exc:
         logger.warning("Deterministic calculation failed: %s", exc)
         return "calc_error", None, [], str(exc)
-    # The question's explicit currency wins over the calculators' hardcoded
-    # "€" default so the figure, the LLM prompt block and the UI panel all
-    # show the currency the student actually wrote (decision 1A).
-    currency_label = _extract_currency_label(question)
+    # Safety net (decision 1A): force the unit AND strip any leftover hardcoded
+    # "€" from the pedagogical note so the figures, the prompt block and the UI
+    # panel all show the currency the student actually wrote, even when a
+    # calculator does not honour display_currency.
     if currency_label is not None:
         calcul_result["unit"] = currency_label
+        note = calcul_result.get("pedagogical_note")
+        if isinstance(note, str) and "€" in note:
+            calcul_result["pedagogical_note"] = note.replace("€", currency_label)
     return "ok", calcul_result, [], None
 
 

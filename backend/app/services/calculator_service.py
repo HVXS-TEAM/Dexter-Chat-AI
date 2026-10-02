@@ -75,6 +75,9 @@ class CalculatorService:
             base_amount=payload.get("base_amount"),
             start_value=payload.get("start_value"),
             comment=payload.get("comment"),
+            # Currency written in the question (decision 1A root fix): lets the
+            # calculators format unit and pedagogical notes with it.
+            display_currency=payload.get("display_currency"),
         )
         result = calculator.calc(input_)
         return {

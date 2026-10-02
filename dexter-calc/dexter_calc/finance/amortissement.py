@@ -75,6 +75,7 @@ class AmortissementLineaireCalculator(DomainCalculator):
         dotation = calculer_dotation_lineaire(valeur, duree)
         residuelle = calculer_valeur_residuelle(valeur, duree, annees)
 
+        devise = input_.display_currency or self.unit
         result = CalculationOutput(
             domain=self.domain,
             sous_theme=self.sous_theme,
@@ -82,8 +83,8 @@ class AmortissementLineaireCalculator(DomainCalculator):
             reference_frame=input_.reference_frame or self.reference_frame,
             result=residuelle,
             label="Valeur residuelle",
-            unit=self.unit,
-            pedagogical_note=f"Dotation annuelle lineaire : {dotation} €. Valeur initiale : {valeur} €. Duree : {duree} annees.",
+            unit=devise,
+            pedagogical_note=f"Dotation annuelle lineaire : {dotation} {devise}. Valeur initiale : {valeur} {devise}. Duree : {duree} annees.",
             profile=input_.profile,
             language=input_.language,
         )
@@ -107,6 +108,7 @@ class AmortissementLineaireCalculator(DomainCalculator):
         valeur = valider_montant(montant)
         duree = valider_annee(input_.periods)
         dotation = calculer_dotation_lineaire(valeur, duree)
+        devise = input_.display_currency or self.unit
         return CalculationOutput(
             domain=self.domain,
             sous_theme=self.sous_theme,
@@ -114,8 +116,8 @@ class AmortissementLineaireCalculator(DomainCalculator):
             reference_frame=input_.reference_frame or self.reference_frame,
             result=dotation,
             label="Dotation d'amortissement annuelle",
-            unit=self.unit,
-            pedagogical_note=f"Dotation lineaire annuelle pour un actif de {valeur} € sur {duree} annees.",
+            unit=devise,
+            pedagogical_note=f"Dotation lineaire annuelle pour un actif de {valeur} {devise} sur {duree} annees.",
             profile=input_.profile,
             language=input_.language,
         )

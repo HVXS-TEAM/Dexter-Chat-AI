@@ -40,6 +40,10 @@ class CalculationInput:
     base_amount: float | None = None
     start_value: float | None = None
     comment: str | None = None
+    # Currency explicitly written by the user (e.g. "FCFA"). When it is
+    # absent, calculators keep their historical "€" default (decision 1A
+    # root fix: unit and pedagogical notes follow the question's currency).
+    display_currency: str | None = None
     extra: dict[str, Any] = field(default_factory=dict)
 
 

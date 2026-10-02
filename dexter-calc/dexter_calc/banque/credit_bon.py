@@ -71,6 +71,7 @@ class CreditBonCalculator(DomainCalculator):
         final = capital_final(capital, taux, duree_mois)
         mensualite = mensualite_emprunt_simple(capital, taux, duree_mois)
 
+        devise = input_.display_currency or self.unit
         result = CalculationOutput(
             domain=self.domain,
             sous_theme=self.sous_theme,
@@ -78,8 +79,8 @@ class CreditBonCalculator(DomainCalculator):
             reference_frame=input_.reference_frame or self.reference_frame,
             result=final,
             label="Capital final (interet simple)",
-            unit=self.unit,
-            pedagogical_note=f"Interet simple : {interet} € sur {duree_mois} mois. Taux : {round(taux * 100, 2)}%.",
+            unit=devise,
+            pedagogical_note=f"Interet simple : {interet} {devise} sur {duree_mois} mois. Taux : {round(taux * 100, 2)}%.",
             profile=input_.profile,
             language=input_.language,
         )
@@ -108,6 +109,7 @@ class CreditBonCalculator(DomainCalculator):
             raise CalculationError("Un taux est requis.", code="missing_rate")
         taux = valider_taux(taux_raw)
         duree_mois = input_.period_months or 1
+        devise = input_.display_currency or self.unit
         return CalculationOutput(
             domain=self.domain,
             sous_theme=self.sous_theme,
@@ -115,8 +117,8 @@ class CreditBonCalculator(DomainCalculator):
             reference_frame=input_.reference_frame or self.reference_frame,
             result=calculer_interet_simple(capital, taux, duree_mois),
             label="Interet simple",
-            unit=self.unit,
-            pedagogical_note=f"Interet simple sur {capital} € pendant {duree_mois} mois au taux de {round(taux * 100, 2)}%.",
+            unit=devise,
+            pedagogical_note=f"Interet simple sur {capital} {devise} pendant {duree_mois} mois au taux de {round(taux * 100, 2)}%.",
             profile=input_.profile,
             language=input_.language,
         )

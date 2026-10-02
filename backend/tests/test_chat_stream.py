@@ -43,6 +43,7 @@ _EXPLIQUE_META = {
     "intention": "explication",
     "domaine": "comptabilite",
     "sous_theme": "bilan",
+    "sous_theme_effectif": None,
     "referentiel": "OHADA",
     "clarification_demandee": False,
     "champs_manquants": [],
@@ -171,6 +172,8 @@ def test_chat_stream_asks_for_clarification_when_context_is_insufficient(monkeyp
     events = _events(response)
     assert [event["type"] for event in events] == ["meta", "token", "done"]
     assert events[0]["clarification_demandee"] is True
+    # Décision 2A : la clé est aussi exposée par le meta de clarification.
+    assert events[0]["sous_theme_effectif"] is None
     assert "préciser" in events[1]["content"].lower()
     assert events[2]["conversation_id"] == conversation.id
     assert persisted_messages[-1] == ("assistant", events[1]["content"])
@@ -563,6 +566,8 @@ def test_chat_stream_meta_reports_mes_cours_when_rag_finds_chunks(monkeypatch):
     assert events[0]["mode"] == "mes_cours"
     assert events[0]["domaine"] == "comptabilite"
     assert events[0]["calcul_result"] is None
+    # Décision 2A : la clé est aussi exposée par le meta du mode général.
+    assert events[0]["sous_theme_effectif"] is None
     assert events[1] == {"type": "token", "content": "D'apres ton cours..."}
     assert events[2]["type"] == "done"
     assert events[2]["message_id"] == 22

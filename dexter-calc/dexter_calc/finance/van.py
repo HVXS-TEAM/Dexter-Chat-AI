@@ -117,14 +117,15 @@ class VANChatCalculator(DomainCalculator):
         flows = list(input_.flows)
         van = calculer_van_flux(flux_initial, flows, taux)
         ica = round(van / flux_initial, 4) if flux_initial != 0 else 0.0
+        devise = input_.display_currency or self.unit
         return CalculationOutput(
             domain=self.domain,
             sous_theme=self.sous_theme,
             intention=input_.intention or self.intention,
             result=van,
             label="VAN",
-            unit=self.unit,
-            pedagogical_note=f"VAN = {van} €. ICA = {ica}.",
+            unit=devise,
+            pedagogical_note=f"VAN = {van} {devise}. ICA = {ica}.",
             extra={"flux_initial": flux_initial, "flows": flows, "van": van, "ica": ica},
         )
 
