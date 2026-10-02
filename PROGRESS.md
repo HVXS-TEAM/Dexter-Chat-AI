@@ -1334,3 +1334,55 @@ décisions adéquates mais présente-les moi avant »* → les décisions restan
 signalements 5/12/13, exposition d'`intention` dans l'UI) font l'objet d'une **feuille de décisions à présenter
 avant toute application** ; aucune correction n'est appliquée sans validation explicite (règles 1 et 13).
 
+### Arbitrage utilisateur — feuille des 4 décisions, puis application (cycle 5)
+
+Arbitrage reçu : **« Prend toutes les actions que tu recommande »** → actées les options recommandées :
+**1A** (devise détectée dans la question), **2A** (clé `sous_theme_effectif`), **3C+A** (base git de référence
+puis discipline de cohabitation), **4A** (report de l'affichage `intention`). Actions réalisées dans l'ordre,
+une chose à la fois :
+
+1. **Décision 3C — base git de référence** : commit local `9fe5374` (« Base de reference: etat du depot avant
+   correctifs unites/sous_theme », 77 fichiers, aucun secret — `.env` et `Documentation Dexter/API Key.txt`
+   sont ignorés), arbre propre constaté ensuite. Tout écart externe futur apparaîtra en `git diff` (pas de
+   push effectué).
+2. **Décision 1A — la devise de la question prime sur `unit="€"`** (`backend/app/services/chat_calculation.py`) :
+   table `_CURRENCY_LABELS` (FCFA, XAF, XOF, EUR/€, $/USD, ordre de priorité) + `_extract_currency_label()`,
+   appliquée dans `run_deterministic_calculation()` juste avant le `return "ok"` — **les deux chemins de succès**
+   (calcul direct et repli domaine-seul) sont couverts. Sans devise explicite, le défaut du calculateur est
+   conservé. Les calculateurs dexter-calc ne sont **pas** modifiés (périmètre : seul `calcul_result.unit` change,
+   ce qui aligne figure, bloc prompt `build_calculation_context()` et panneau UI `Chat.tsx:521`).
+3. **Décision 2A — `sous_theme_effectif` dans le `meta` du branch calcul** (`backend/app/routers/chat.py`,
+   `_stream_calcul_events`) : clé additive = `calcul_result.sous_theme` (registre dexter-calc), `None` quand il
+   n'y a pas de résultat. `meta.sous_theme` (classifieur) est laissé tel quel — sources volontairement
+   distinctes. **Périmètre** : seul l'événement `meta` de la branche calcul porte la clé ; les `meta`
+   `explique_moi`/`mes_cours` (où `calcul_result` est toujours `None`) ne l'ont pas — signalé, pas étendu de
+   ma propre initiative (règle 8).
+4. **Décision 4A — report** : l'affichage de l'`intention` dans l'UI reste reporté faute de maquette dans
+   `documentation/` (règle 3). Aucun fichier front touché.
+5. **Signalement 12 : CLOS** — le mappage `subst S:` est obsolète (constaté : `subst` vide, dépôt travaillé via
+   `D:\Projets Edwin\New\Chatbot & Calco\Dexter Chat AI`), il ne désigne plus aucun chemin actif.
+6. **Signalements 5 et 13** : la partie outillage (C) est faite (base git) ; la partie discipline (A) engage
+   le comportement du rédacteur externe et n'est pas un correctif technique — ils restent ouverts comme
+   relais de vigilance (`git status` = nouveau réflexe avant chaque cycle).
+
+**Vérifications réelles (aucun « ça devrait marcher ») :**
+- `py_compile` sur `chat_calculation.py`, `chat.py`, `test_chat_calcul.py`, `test_chat_stream.py` → **OK** ;
+- **suite complète `pytest -q` → 113 passed / 0 failed (76 s)** (110 précédents + 3 nouveaux tests : table de
+  devise, question FCFA → `unit == "FCFA"`, absence de devise → défaut `€` conservé ; le test stream existant
+  `sous_theme="régularisation"` asserte maintenant `sous_theme_effectif == "tva"`) ;
+- serveur redémarré (l'exécution uvicorn tourne **sans `--reload`**, les éditions n'étaient pas servies) →
+  `GET /health = 200 {"status":"ok"}` ;
+- **harnais `%TEMP%\dexter_stream_live_check.py` rejoué → 18/18 vérifications passées**, en live :
+  - TVA : `unit: 'FCFA'` (était `'€'`) + `sous_theme: 'régularisation'` / `sous_theme_effectif: 'tva'` ;
+  - crédit : `unit: 'FCFA'` (était `'€'`) + `sous_theme_effectif: 'credit'` ;
+  - TVA sans taux : `sous_theme_effectif: None`, filet de clarification intact ;
+  - question générale : meta `explique_moi` inchangé (clé non présente, périmètre assumé).
+
+**Observations résiduelles signalées, non corrigées (règle 8) :**
+- la `pedagogical_note` du crédit contient encore « 1200.0 € sur 12 mois » (texte interne généré par
+  dexter-calc) — 1A porte sur `calcul_result.unit`, pas sur les notes des calculateurs ;
+- `sous_theme_effectif` absent des `meta` non-calcul (voir point 3).
+
+**Statut : cycle 5 appliqué et vérifié (113 tests + harnais 18/18) — VALIDATION UTILISATEUR EN ATTENTE
+(règle 11)** ; signalement 12 clos, 5/13 en discipline de suivi, décision 4A reportée.
+

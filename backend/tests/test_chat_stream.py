@@ -326,6 +326,9 @@ def test_chat_stream_calcul_sends_meta_before_verified_tokens(monkeypatch):
     assert events[0]["mode"] == "calcul"
     assert events[0]["intention"] == "calcul"
     assert events[0]["domaine"] == "comptabilite"
+    # Decision 2A : meta expose aussi le sous-theme effectivement calcule.
+    assert events[0]["sous_theme"] == "régularisation"
+    assert events[0]["sous_theme_effectif"] == "tva"
     assert events[0]["clarification_demandee"] is False
     assert events[0]["champs_manquants"] == []
     assert events[0]["calcul_result"]["result"] == 200.0

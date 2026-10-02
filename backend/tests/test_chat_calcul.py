@@ -288,3 +288,51 @@ def test_infer_calcul_domain_returns_none_when_two_domains_tie():
         )
         is None
     )
+
+
+def test_extract_currency_label_detects_explicit_currencies():
+    """Decision 1A : la devise ecrite dans la question est reconnue."""
+    extract = chat_calculation._extract_currency_label
+    assert extract("TVA pour 1000 FCFA HT a 20%") == "FCFA"
+    assert extract("TVA pour 1000 XAF HT a 20%") == "XAF"
+    assert extract("TVA pour 1000 EUR HT a 20%") == "€"
+    assert extract("TVA pour 1000 euros HT a 20%") == "€"
+    assert extract("TVA pour 1000 $ HT a 20%") == "$"
+    assert extract("TVA pour 1000 USD HT a 20%") == "$"
+    # Aucune devise explicite -> aucune etiquette imposee (defaut du calculateur).
+    assert extract("TVA pour 1000 HT a 20%") is None
+
+
+def test_chat_calcul_unit_follows_question_currency(monkeypatch):
+    """Decision 1A : question en FCFA -> calcul_result.unit vaut FCFA (pas €)."""
+    def generate(question, classification, user, history_context=None):
+        return "TVA de 200 FCFA, TTC de 1200 FCFA."
+
+    response = _post(
+        "Calcule la TVA pour 1000 FCFA HT a 20%",
+        _calc_classification(),
+        generate,
+        monkeypatch,
+    )
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["calcul_result"]["result"] == 200.0
+    assert body["calcul_result"]["unit"] == "FCFA"
+    assert "200.0 FCFA" in body["reponse"] or "FCFA" in body["reponse"]
+
+
+def test_chat_calcul_unit_keeps_calculator_default_without_currency(monkeypatch):
+    """Decision 1A : sans devise explicite, l'unite par defaut du calculateur est conservee."""
+    def generate(question, classification, user, history_context=None):
+        return "TVA de 200 EUR."
+
+    response = _post(
+        "Calcule la TVA pour 1000 HT a 20%",
+        _calc_classification(),
+        generate,
+        monkeypatch,
+    )
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["calcul_result"]["result"] == 200.0
+    assert body["calcul_result"]["unit"] == "€"

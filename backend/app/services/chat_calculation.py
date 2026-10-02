@@ -46,6 +46,16 @@ _MISSING_LABELS: dict[str, dict[str, str]] = {
     },
 }
 
+# Explicit currency tokens written by the student, in match-priority order.
+# The label replaces the calculators' hardcoded ``unit="€"`` default (decision 1A).
+_CURRENCY_LABELS: tuple[tuple[str, str], ...] = (
+    (r"\bFCFA\b", "FCFA"),
+    (r"\bXAF\b", "XAF"),
+    (r"\bXOF\b", "XOF"),
+    (r"(?:€|\bEUR(?:OS)?\b)", "€"),
+    (r"(?:\$|\bUSD\b)", "$"),
+)
+
 
 def _parse_float(token: str) -> float | None:
     """Parse a French/English decimal token, else None."""
@@ -313,6 +323,21 @@ def infer_calcul_domain(question: str, classification: Any) -> str | None:
     return best_domains[0]
 
 
+def _extract_currency_label(question: str) -> str | None:
+    """Return the currency explicitly written in the question, else None.
+
+    The calculators declare a hardcoded default ``unit`` of ``"€"``; when the
+    student writes the amounts in another currency (FCFA, USD...) the unit
+    shown with the verified figure must follow the question, otherwise the
+    figure and the LLM explanation disagree on the currency (regle 12).
+    First matching pattern wins (``FCFA`` before the looser ``EUR`` ones).
+    """
+    for pattern, label in _CURRENCY_LABELS:
+        if re.search(pattern, question, flags=re.IGNORECASE):
+            return label
+    return None
+
+
 def run_deterministic_calculation(
     question: str,
     classification: Any,
@@ -360,6 +385,12 @@ def run_deterministic_calculation(
     except Exception as exc:
         logger.warning("Deterministic calculation failed: %s", exc)
         return "calc_error", None, [], str(exc)
+    # The question's explicit currency wins over the calculators' hardcoded
+    # "€" default so the figure, the LLM prompt block and the UI panel all
+    # show the currency the student actually wrote (decision 1A).
+    currency_label = _extract_currency_label(question)
+    if currency_label is not None:
+        calcul_result["unit"] = currency_label
     return "ok", calcul_result, [], None
 
 

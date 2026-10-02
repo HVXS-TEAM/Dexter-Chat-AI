@@ -191,6 +191,9 @@ async def _stream_calcul_events(
             "intention": classification.intention,
             "domaine": classification.domaine,
             "sous_theme": classification.sous_theme,
+            # Sub-theme actually resolved by the calculator registry (may
+            # differ from the free-text classification above) — decision 2A.
+            "sous_theme_effectif": (calcul_result or {}).get("sous_theme"),
             "referentiel": classification.referentiel,
             "clarification_demandee": clarification is not None,
             "champs_manquants": champs_manquants if clarification else [],
