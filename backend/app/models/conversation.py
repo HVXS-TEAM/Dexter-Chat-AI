@@ -56,6 +56,7 @@ class Message(Base):
     sous_theme_detecte: Mapped[str | None] = mapped_column(String(100), nullable=True)
     mode_utilise: Mapped[str] = mapped_column(String(20), nullable=False, default="explique_moi")
     sources_rag: Mapped[list[str] | None] = mapped_column(JSON, nullable=True)
+    feedback: Mapped[str | None] = mapped_column(String(10), nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),

@@ -1,22 +1,30 @@
-"""Tests for auth routes."""
-import os
+"""Tests for auth routes and the authenticated user profile.
+
+Real API contract (app/routers/auth.py, app/routers/users.py):
+- POST  /auth/register -> UserRead (201), no tokens
+- POST  /auth/login    -> TokenPair (200) or 401; password must be >= 8 chars
+- GET   /users/me      -> UserRead (Bearer access token required)
+- PATCH /users/me      -> UserRead (Bearer access token required)
+
+The test database is provided by tests/conftest.py (temporary SQLite).
+"""
 import uuid
 from fastapi.testclient import TestClient
 
-os.environ["DB_URL"] = "sqlite:///./test_auth.db"
-
 from app.main import app
-from app.models.user import Base
-from app.db.session import engine
-
-Base.metadata.create_all(bind=engine)
 
 client = TestClient(app)
 
+DEFAULT_PASSWORD = "SecurePass123!"
 
-def _register(email=None, password="SecurePass123!"):
+
+def _email(prefix):
+    return f"{prefix}-{uuid.uuid4()}@example.com"
+
+
+def _register(email=None, password=DEFAULT_PASSWORD):
     if email is None:
-        email = f"test-{uuid.uuid4()}@example.com"
+        email = _email("test")
     payload = {
         "email": email,
         "password": password,
@@ -24,46 +32,64 @@ def _register(email=None, password="SecurePass123!"):
         "filiere": "Informatique",
         "annee": "2025",
     }
-    resp = client.post("/auth/register", json=payload)
-    return resp
+    return client.post("/auth/register", json=payload)
 
 
-def test_register():
-    resp = _register()
+def _auth_header(email, password=DEFAULT_PASSWORD):
+    """Return an Authorization header for an existing user (register is
+    token-free by design; only /auth/login issues tokens)."""
+    resp = client.post("/auth/login", json={"email": email, "password": password})
+    assert resp.status_code == 200, resp.text
+    return {"Authorization": f"Bearer {resp.json()['access_token']}"}
+
+
+def test_register_returns_user_without_tokens():
+    email = _email("reg")
+    resp = _register(email=email)
     assert resp.status_code == 201
     data = resp.json()
-    assert "access_token" in data
-    assert "refresh_token" in data
+    assert data["email"] == email
+    assert data["role"] == "etudiant"
+    assert "id" in data and "created_at" in data
+    # Registration must NOT leak credentials or tokens.
+    assert "access_token" not in data
+    assert "refresh_token" not in data
+    assert "password" not in data
+    assert "password_hash" not in data
 
 
 def test_register_duplicate():
-    email = f"dup-{uuid.uuid4()}@example.com"
+    email = _email("dup")
     _register(email=email)
     resp = _register(email=email)
     assert resp.status_code == 400
 
 
-def test_login():
-    email = f"login-{uuid.uuid4()}@example.com"
+def test_login_returns_token_pair():
+    email = _email("login")
     password = "MyPass123!"
     _register(email=email, password=password)
     resp = client.post("/auth/login", json={"email": email, "password": password})
     assert resp.status_code == 200
-    assert "access_token" in resp.json()
+    data = resp.json()
+    assert data["access_token"]
+    assert data["refresh_token"]
+    assert data["token_type"] == "bearer"
 
 
-def test_login_wrong_password():
-    email = f"wrong-{uuid.uuid4()}@example.com"
-    _register(email=email, password="correct")
-    resp = client.post("/auth/login", json={"email": email, "password": "wrong"})
+def test_login_wrong_password_returns_401():
+    email = _email("wrong")
+    _register(email=email, password="RightPass123!")
+    # A different password of valid length (>= 8 chars) so the request
+    # passes schema validation and the endpoint answers 401, not 422.
+    resp = client.post("/auth/login", json={"email": email, "password": "WrongPass123!"})
     assert resp.status_code == 401
 
 
 def test_get_profile():
-    email = f"me-{uuid.uuid4()}@example.com"
-    reg = _register(email=email)
-    token = reg.json()["access_token"]
-    resp = client.get("/auth/me", headers={"Authorization": f"Bearer {token}"})
+    email = _email("me")
+    _register(email=email)
+    resp = client.get("/users/me", headers=_auth_header(email))
     assert resp.status_code == 200
     data = resp.json()
     assert data["email"] == email
@@ -71,15 +97,16 @@ def test_get_profile():
 
 
 def test_update_profile():
-    email = f"patch-{uuid.uuid4()}@example.com"
-    reg = _register(email=email)
-    token = reg.json()["access_token"]
+    email = _email("patch")
+    _register(email=email)
     payload = {"langue_preferee": "en", "filiere": "Finance"}
-    resp = client.patch("/auth/me", json=payload, headers={"Authorization": f"Bearer {token}"})
+    resp = client.patch("/users/me", json=payload, headers=_auth_header(email))
     assert resp.status_code == 200
-    assert resp.json()["langue_preferee"] == "en"
+    data = resp.json()
+    assert data["langue_preferee"] == "en"
+    assert data["filiere"] == "Finance"
 
 
 def test_unauthorized_access():
-    resp = client.get("/auth/me")
+    resp = client.get("/users/me")
     assert resp.status_code in (401, 403)

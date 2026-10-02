@@ -3,6 +3,7 @@
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import SecretStr
 
 # Project root = backend/app/config.py -> parents[0]=app, [1]=backend, [2]=root.
 # Resolved from the file location so the app works whatever the CWD is
@@ -23,16 +24,22 @@ class Settings(BaseSettings):
     db_name: str = ""
     db_url: str = ""
     jwt_secret: str = ""
-    llm_api_key: str = ""
+    llm_api_key: SecretStr = SecretStr("")
     llm_base_url: str = "https://api.groq.com/openai/v1"
     llm_model: str = "llama-3.3-70b-versatile"
     llm_model_generation: str = "openai/gpt-oss-120b"
-    llm_api_key_cerebras: str = ""
-    llm_api_key_sambanova: str = ""
+    llm_api_key_cerebras: SecretStr = SecretStr("")
+    llm_api_key_sambanova: SecretStr = SecretStr("")
     embedding_model: str = "intfloat/multilingual-e5-small"
     rag_min_score: float = 0.5
     rag_max_chunks: int = 5
     upload_dir: str = "uploads"
+    # OCR des documents images (png/jpg/jpeg) — voir .env.example.
+    # Vides par defaut : le service leve alors une erreur explicite et journalisee
+    # si le moteur Tesseract est introuvable (jamais d'echec silencieux).
+    tesseract_cmd: str = ""
+    tessdata_dir: str = ""
+    ocr_lang: str = "fra"
 
 
 settings = Settings()

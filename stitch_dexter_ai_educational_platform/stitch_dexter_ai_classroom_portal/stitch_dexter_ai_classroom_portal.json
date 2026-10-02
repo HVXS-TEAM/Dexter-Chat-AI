@@ -1,0 +1,94 @@
+{
+  "folder_name": "stitch_dexter_ai_classroom_portal",
+  "title": "Portail Classes — Mes classes (Dexter)",
+  "screen_type": "page de gestion des classes (compte requis, protégée)",
+  "design_language": "dark dashboard + variante claire",
+  "theme": "deep navy (sombre) / clair via les tokens existants de l'app",
+  "design_system_doc": "nocturne_scholar/DESIGN.md (système « Nocturne Scholar » : typo, boutons, champs, cartes, chips, focus/hover)",
+  "files": [
+    "mes_classes_vue_tudiant_sombre/screen.png",
+    "mes_classes_vue_professeur_sombre/screen.png",
+    "mes_classes_vue_tudiant_clair/screen.png"
+  ],
+  "variants": [
+    {
+      "name": "mes_classes_vue_tudiant_sombre",
+      "role": "etudiant",
+      "theme": "dark",
+      "files": ["mes_classes_vue_tudiant_sombre/screen.png"],
+      "component_tree": [
+        "sidebar fixe (marque + nav : Accueil, Recherche, Chat, Mes matières, Mes classes [groups, ACTIF], Historique ; bas : carte plan [non reproduite — disposition 9], Profil, Paramètres, Thème, bloc utilisateur)",
+        "H1 « Mes classes » + sous-titre « Rejoignez une classe ou retrouvez celles où vous êtes inscrit. »",
+        "carte « Rejoindre une nouvelle classe » (bordure violette) : icône ⊕, texte d'aide, champ « Code d'invitation » (placeholder « EX. A7XK2M9P », 8 caractères), bouton primaire violet « Rejoindre »",
+        "en-tête « Classes actuelles » + chip compteur (« N classes actives »)",
+        "grille 3 colonnes : pastille icône groups, nom de la classe, ligne « Professeur » (générique — disposition 1), séparateur, « Créée le {created_at} » (disposition 2) + icône check"
+      ]
+    },
+    {
+      "name": "mes_classes_vue_professeur_sombre",
+      "role": "professeur",
+      "theme": "dark",
+      "files": ["mes_classes_vue_professeur_sombre/screen.png"],
+      "component_tree": [
+        "sidebar identique (bouton plan plein — non reproduit, disposition 9)",
+        "eyebrow « Espace enseignant » (sans année scolaire — disposition 8)",
+        "H1 « Mes classes » + sous-titre « Créez vos classes et partagez le code d'invitation avec vos étudiants. »",
+        "carte « Créer une nouvelle classe » (bordure violette) : champ « Nom de la classe » (placeholder « Ex. Terminale — Comptabilité ») + bouton primaire violet « Créer une classe » (icône +)",
+        "grille 3 colonnes : pastille groups, nom, panneau inset « CODE D'INVITATION » (code mono + icône content_copy), « Créée le {created_at} »"
+      ]
+    },
+    {
+      "name": "mes_classes_vue_tudiant_clair",
+      "role": "etudiant",
+      "theme": "light",
+      "files": ["mes_classes_vue_tudiant_clair/screen.png"],
+      "known_defect": "bandeau violet du bloc « Rejoindre » illisible (titre blanc tronqué sur fond clair) — structure de la variante sombre = autorité pour ce bloc ; couleurs adaptées via les tokens clairs existants de l'app",
+      "notes": ["en-tête de section « Classes actives (N) » équivalent de « Classes actuelles » + compteur"]
+    }
+  ],
+  "dominant_colors": ["#020b17", "#0b1729", "#1d2a3d", "#7a68ff", "#8ed9ff"],
+  "light_variant_colors": "adaptées depuis les tokens clairs existants de l'app (référence : cran_d_accueil_clair_*) — aucune teinte inventée",
+  "reproduction_spec": {
+    "reference_files": "Les 3 screen.png listés sont les autorités visuelles ; mes_classes_vue_tudiant_sombre fait autorité pour la structure du bloc « Rejoindre » en mode clair (défaut de lisibilité documenté dans la variante claire).",
+    "viewport": { "width_px": 1440, "height_px": 1024, "device_scale_factor": 1, "orientation": "landscape" },
+    "grid": { "columns": 12, "gutter_px": 24, "spacing_base_px": 8, "sidebar_width_px": 280, "cards_grid": "3 colonnes" },
+    "tokens": {
+      "font_family": "Inter",
+      "font_weights": [400, 500, 600, 700],
+      "card_radius_px": 18,
+      "control_radius_px": 12,
+      "border_width_px": 1,
+      "glass_blur_px": 16,
+      "chips": "pilule 9999px (violet : fond rgba(122,104,255,0.12), texte #7a68ff ; glace : fond rgba(142,217,255,0.1), texte #8ed9ff)",
+      "primary": "#7a68ff",
+      "primary_hover": "#8c7dff + glow 0 0 20px rgba(122,104,255,0.4)",
+      "input_focus": "bordure #7a68ff + halo 0 0 0 3px rgba(122,104,255,0.2)",
+      "inset_code_panel": "fond sombre, label « CODE D'INVITATION » en label-sm, code en monospace, icône content_copy"
+    },
+    "typography_contract": "Conserver famille, graisse, taille, interligne et casse exacts des références (Inter ; H1 display, sous-titres body-lg, libellés de cartes).",
+    "content_contract": "Conserver les textes français visibles : « Mes classes », « Rejoignez une classe ou retrouvez celles où vous êtes inscrit. », « Rejoindre une nouvelle classe », « EX. A7XK2M9P », « Rejoindre », « Classes actuelles », « Professeur », « Créer une nouvelle classe », « Créer une classe », « Créée le », « CODE D'INVITATION ». Les éléments de données non disponibles côté backend V1 sont exclus conformément à data_dispositions.",
+    "effects_contract": [
+      "Superpositions tonales sombres + panneaux verre (blur 16-24px).",
+      "Bordures 1px, glow violet au focus/hover, élévation des cartes interactives.",
+      "Icônes Material Symbols 24px (home, search, chat, auto_stories, groups, history, account_circle, settings, content_copy, logout, add, arrow_forward)."
+    ],
+    "fidelity_rules": [
+      "screen.png = autorité finale de géométrie, par variante.",
+      "Comparer un rendu au viewport de référence avant acceptation.",
+      "Aucune donnée inventée : seuls les champs backend V1 (nom, code_invitation, professeur_id, created_at, rôle utilisateur) alimentent l'UI."
+    ]
+  },
+  "data_dispositions": [
+    { "id": 1, "element": "Nom du professeur affiché (M. Martin…)", "backend": "professeur_id seulement ; aucun champ nom (pas même sur User)", "disposition": "libellé générique « Professeur » sans nom" },
+    { "id": 2, "element": "Date « Rejoint le »", "backend": "created_at de la classe seulement ; joined_at non exposé", "disposition": "libellé « Créée le » avec created_at" },
+    { "id": 3, "element": "Nombre d'inscrits (« 34 inscrits »)", "backend": "aucun comptage exposé", "disposition": "omis" },
+    { "id": 4, "element": "Lieu (« Salle 204 », « Lycée Victor Hugo »)", "backend": "aucun champ", "disposition": "omis" },
+    { "id": 5, "element": "Description des cartes professeur", "backend": "aucun champ", "disposition": "omise" },
+    { "id": 6, "element": "Chips de catégorie (Semestre 1, BTS, Lycée…)", "backend": "aucun champ", "disposition": "omises" },
+    { "id": 7, "element": "Contrôle « Trié par date d'inscription »", "backend": "ordre fixe created_at desc, pas de paramètre de tri", "disposition": "contrôle omis (l'ordre réel correspond déjà)" },
+    { "id": 8, "element": "Eyebrow « ESPACE ENSEIGNANT • ANNÉE 2026-2027 »", "backend": "pas de notion d'année scolaire", "disposition": "conservé en « Espace enseignant », sans l'année" },
+    { "id": 9, "element": "Carte sidebar « PLAN ÉTUDIANT / Passer à Pro »", "backend": "sidebar actuelle = bouton « Upgrade to Pro » statique", "disposition": "sidebar inchangée hors ajout de l'entrée « Mes classes » (chantier « badge plan » séparé)" },
+    { "id": 10, "element": "Bloc utilisateur avec nom affiché (« Thomas Durand »)", "backend": "email seul (pas de champ nom)", "disposition": "email seul, inchangé (chantier « prenom » différé)" }
+  ],
+  "notes": "Analyse du 20/09/2026 ; dispositions 1-10 validées par l'utilisateur (GO, sans modification backend). Défauts de la maquette signalés : bandeau violet illisible en variante claire (structure sombre = autorité) ; variante professeur claire absente (dérivée des tokens clairs existants de l'app)."
+}

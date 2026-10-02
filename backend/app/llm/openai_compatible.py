@@ -14,7 +14,7 @@ class OpenAICompatibleProvider(LLMProvider):
     """Provider for OpenAI-compatible APIs such as Groq, DeepSeek, and OpenAI."""
 
     def __init__(self) -> None:
-        self.api_key = settings.llm_api_key
+        self.api_key = settings.llm_api_key.get_secret_value()
         self.base_url = settings.llm_base_url.rstrip("/")
         self.model = settings.llm_model
 

@@ -55,8 +55,68 @@ def test_chat_message_requests_clarification_without_generating(monkeypatch):
     assert response.status_code == 200, response.text
     body = response.json()
     assert body["clarification_demandee"] is True
-    assert body["reponse"] is None
+    # Parity with /chat/stream: the route now returns the clarification text the
+    # student actually reads instead of an empty "reponse".
+    assert body["reponse"] == (
+        "Je n’ai pas assez d’éléments pour comprendre le contexte de ta demande. "
+        "Peux-tu préciser ce que tu souhaites faire ?"
+    )
     assert generate_called is False
+
+
+def test_chat_message_persists_clarification_like_stream(monkeypatch):
+    """Parite des deux routes : la clarification est un vrai tour assistant.
+
+    Sans persistance, l'historique sauvegarde gardait une question sans reponse
+    et le tour suivant ne pouvait pas relire la demande de precision.
+    """
+    conversation = SimpleNamespace(id=42, titre="Conversation")
+    persisted_messages = []
+    classification = ClassificationResult(
+        domaine=None,
+        sous_theme=None,
+        referentiel=None,
+        intention="autre",
+        langue="fr",
+        confiance=0.2,
+        besoin_precision=True,
+        question_sous_themes=["bilan"],
+    )
+
+    monkeypatch.setattr("app.services.classifier.classify", lambda question, history: classification)
+    monkeypatch.setattr(
+        "app.routers.chat.get_conversation",
+        lambda db, conversation_id, user_id: conversation,
+    )
+    monkeypatch.setattr("app.routers.chat.build_conversation_context", lambda db, item: "")
+
+    def add_message(db, conversation_id, role, content, **kwargs):
+        persisted_messages.append((role, content, kwargs.get("mode_utilise")))
+        return SimpleNamespace(id=10 + len(persisted_messages))
+
+    monkeypatch.setattr("app.routers.chat.add_message", add_message)
+
+    def fail_generation(*args, **kwargs):
+        raise AssertionError("generation must not run during clarification")
+
+    monkeypatch.setattr("app.services.chat_service.generate_answer", fail_generation)
+    app.dependency_overrides[get_current_user] = _override_user
+    app.dependency_overrides[get_db] = _override_db
+    try:
+        response = client.post(
+            "/chat/message",
+            json={"question": "explique le bilan", "conversation_id": conversation.id},
+        )
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 200, response.text
+    body = response.json()
+    assert body["clarification_demandee"] is True
+    assert persisted_messages == [
+        ("user", "explique le bilan", "explique_moi"),
+        ("assistant", body["reponse"], "explique_moi"),
+    ]
 
 
 def test_chat_message_generates_with_generation_model(monkeypatch):

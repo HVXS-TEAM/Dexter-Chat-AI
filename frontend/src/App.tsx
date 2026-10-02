@@ -1,7 +1,9 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
+import DexterWelcome from './components/DexterWelcome'
 import Layout from './components/Layout'
 import Accueil from './pages/Accueil'
 import Chat from './pages/Chat'
+import Classes from './pages/Classes'
 import Historique from './pages/Historique'
 import Login from './pages/Login'
 import Matiere from './pages/Matiere'
@@ -20,9 +22,12 @@ export default function App() {
           <Routes>
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            {/* Ecran d'ouverture public : connexion ou essai sans connexion */}
+            <Route path="/bienvenue" element={<DexterWelcome />} />
+            {/* Espace consultable sans compte (essai sans connexion) */}
             <Route
               element={
-                <ProtectedRoute>
+                <ProtectedRoute allowGuest redirectTo="/bienvenue">
                   <Layout />
                 </ProtectedRoute>
               }
@@ -33,7 +38,18 @@ export default function App() {
               <Route path="/matiere/:id" element={<Matiere />} />
               <Route path="/matieres" element={<Matieres />} />
               <Route path="/historique" element={<Historique />} />
+            </Route>
+
+            {/* Espace personnel : compte requis */}
+            <Route
+              element={
+                <ProtectedRoute>
+                  <Layout />
+                </ProtectedRoute>
+              }
+            >
               <Route path="/profil" element={<Profil />} />
+              <Route path="/classes" element={<Classes />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

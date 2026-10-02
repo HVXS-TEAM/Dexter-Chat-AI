@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import logging
 import re
+import unicodedata
 from typing import Any
 
 from dexter_calc.core.registry import NoCalculatorFoundError
@@ -236,6 +237,82 @@ def extract_calculation_params(
     return payload, missing
 
 
+def _normalize_for_matching(text: str | None) -> str:
+    """Lowercase text and strip accents so it can be compared to the registry."""
+    if not text:
+        return ""
+    decomposed = unicodedata.normalize("NFKD", text.lower())
+    return "".join(char for char in decomposed if not unicodedata.combining(char))
+
+
+def _matches_vocabulary(text: str, vocabulary: str) -> bool:
+    """True when the text contains the vocabulary at a word start.
+
+    Matching at a word start (and not anywhere in the text) keeps the short
+    registry id ``van`` from matching unrelated words such as ``avant``, while
+    still accepting inflected forms such as ``credits``.
+    """
+    if not text or not vocabulary:
+        return False
+    return re.search(rf"\b{re.escape(vocabulary)}", text) is not None
+
+
+def infer_calcul_domain(question: str, classification: Any) -> str | None:
+    """Infer the calculation domain when the classifier left it empty.
+
+    The live classifier can return ``intention == "calcul"`` with
+    ``domaine=None`` (instability observed on the TVA question). Without a
+    domain the deterministic branch is skipped and the question would fall
+    back to free generation with unverified figures (PRD S6).
+
+    The fallback compares the question and the classifier sub-themes to the
+    vocabulary of the *calculator registry* (``tva``, ``credit``, ``van``,
+    ``amortissement``): the registry is the same source of truth used to run
+    the calculation, so an inferred domain is always a calculable one. A
+    domain is returned only when a single domain wins; an unmatched or
+    ambiguous question returns ``None`` so the caller keeps asking for a
+    precision instead of guessing (regle 6/12).
+    """
+    question_text = _normalize_for_matching(question)
+    classification_texts = [_normalize_for_matching(classification.sous_theme)]
+    classification_texts.extend(
+        _normalize_for_matching(item) for item in classification.question_sous_themes or []
+    )
+
+    scores: dict[str, int] = {}
+    for tool in calculator_service.list_calculators():
+        domain = tool.get("domain")
+        vocabulary = _normalize_for_matching(tool.get("sous_theme"))
+        if not domain or not vocabulary:
+            continue
+        score = 0
+        if _matches_vocabulary(question_text, vocabulary):
+            score += 1
+        if any(_matches_vocabulary(text, vocabulary) for text in classification_texts):
+            score += 1
+        if score:
+            scores[domain] = scores.get(domain, 0) + score
+
+    if not scores:
+        logger.info("Calcul domain inference: no registry vocabulary in %r", question)
+        return None
+
+    best_score = max(scores.values())
+    best_domains = [domain for domain, score in scores.items() if score == best_score]
+    if len(best_domains) != 1:
+        logger.warning(
+            "Calcul domain inference is ambiguous for %r: %s", question, scores
+        )
+        return None
+
+    logger.info(
+        "Calcul domain inference: %r -> %r (calculator registry vocabulary)",
+        question,
+        best_domains[0],
+    )
+    return best_domains[0]
+
+
 def run_deterministic_calculation(
     question: str,
     classification: Any,
@@ -254,8 +331,32 @@ def run_deterministic_calculation(
     try:
         calcul_result = calculator_service.calculate(domaine, payload)
     except NoCalculatorFoundError as exc:
-        logger.warning("No calculator for chat calcul branch: %s", exc)
-        return "no_calculator", None, [], str(exc)
+        # The chat sous_theme comes from free-text LLM classification and can
+        # use the domain-catalogue vocabulary (e.g. "analyse de credit") instead
+        # of the registry one (e.g. "credit"). Retry with a domain-only
+        # resolution ONLY when that domain has exactly one registered tool, so
+        # an ambiguous domain (e.g. finance: VAN vs amortissement) keeps failing
+        # explicitly instead of picking an arbitrary calculator (regle 6).
+        domain_tools = [
+            tool
+            for tool in calculator_service.list_calculators()
+            if tool.get("domain") == domaine
+        ]
+        if len(domain_tools) != 1:
+            logger.warning("No calculator for chat calcul branch: %s", exc)
+            return "no_calculator", None, [], str(exc)
+        logger.warning(
+            "Chat calcul: sous_theme %r is not registered for %s; "
+            "using the only registered tool instead.",
+            payload.get("sous_theme"),
+            domaine,
+        )
+        try:
+            calcul_result = calculator_service.calculate(
+                domaine, {**payload, "sous_theme": None}
+            )
+        except NoCalculatorFoundError as fallback_exc:
+            return "no_calculator", None, [], str(fallback_exc)
     except Exception as exc:
         logger.warning("Deterministic calculation failed: %s", exc)
         return "calc_error", None, [], str(exc)

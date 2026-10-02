@@ -163,6 +163,45 @@ def test_join_class_not_found_is_404(monkeypatch):
         app.dependency_overrides.clear()
 
 
+def test_join_class_by_code_endpoint_success(monkeypatch):
+    app.dependency_overrides[get_current_user] = lambda: FakeUser(18, "etudiant")
+    app.dependency_overrides[get_db] = _override_db
+    try:
+        joined = type("C", (), {"id": 7, "nom": "Biologie", "professeur_id": 99, "code_invitation": "ABC12345", "created_at": None})()
+        monkeypatch.setattr("app.routers.classes.join_class_by_code", lambda db, etudiant, code: joined)
+        response = client.post("/classes/join", json={"code_invitation": "abc12345"})
+        assert response.status_code == 200, response.text
+        body = response.json()
+        assert body["id"] == 7
+        assert "code_invitation" not in body
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_join_class_by_code_endpoint_invalid_code_is_400(monkeypatch):
+    app.dependency_overrides[get_current_user] = lambda: FakeUser(19, "etudiant")
+    app.dependency_overrides[get_db] = _override_db
+    try:
+        def boom(db, etudiant, code):
+            raise ValueError("Invalid invitation code.")
+        monkeypatch.setattr("app.routers.classes.join_class_by_code", boom)
+        response = client.post("/classes/join", json={"code_invitation": "ZZZZZZZZ"})
+        assert response.status_code == 400, response.text
+        assert "Invalid invitation code." in response.json()["detail"]
+    finally:
+        app.dependency_overrides.clear()
+
+
+def test_join_class_by_code_endpoint_as_professor_is_403():
+    app.dependency_overrides[get_current_user] = lambda: FakeUser(20, "professeur")
+    app.dependency_overrides[get_db] = _override_db
+    try:
+        response = client.post("/classes/join", json={"code_invitation": "ABC12345"})
+        assert response.status_code == 403, response.text
+    finally:
+        app.dependency_overrides.clear()
+
+
 def test_join_class_as_professor_is_403(monkeypatch):
     app.dependency_overrides[get_current_user] = lambda: FakeUser(17, "professeur")
     app.dependency_overrides[get_db] = _override_db

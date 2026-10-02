@@ -1,7 +1,8 @@
 import axios from 'axios'
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
-
+import { useAuth } from '../auth'
+import { ACCOUNT_SUBTITLE, GUEST_GREETING, extractFirstName, isLearningQuestion, pickStableAccountGreeting } from './accueilGreetings'
 interface Domain {
   id: string
   label: string
@@ -11,19 +12,26 @@ interface Domain {
 }
 
 const suggestions = [
-  { label: 'Résoudre une équation', icon: 'calculate' },
-  { label: 'Traduire un texte', icon: 'translate' },
-  { label: 'Expliquer la mitose', icon: 'biotech' },
+  { label: 'Explique-moi le bilan comptable', icon: 'account_balance' },
+  { label: "Calcule la VAN d'un projet", icon: 'calculate' },
+  { label: "C'est quoi le mix marketing (4P) ?", icon: 'campaign' },
 ]
 
 const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
 export default function Accueil() {
   const navigate = useNavigate()
+  const { user, isAuthenticated } = useAuth()
   const [question, setQuestion] = useState('')
   const [domains, setDomains] = useState<Domain[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  // Formule stable pendant la session de l'onglet (tiree une fois, reutilisee ensuite).
+  const [greeting] = useState(() =>
+    isAuthenticated
+      ? pickStableAccountGreeting(extractFirstName(user?.email), user?.email)
+      : GUEST_GREETING
+  )
 
   const loadDomains = useCallback(async () => {
     setIsLoading(true)
@@ -68,9 +76,11 @@ export default function Accueil() {
             />
           </div>
           <h1 id="page-title" className="mb-2 text-[32px] font-semibold leading-10 tracking-[-0.01em] text-[var(--text-primary)]">
-            Bonjour, David 👋
+            {greeting}
           </h1>
-          <p className="text-lg font-normal leading-7 text-[var(--text-secondary)]">Que souhaites-tu étudier aujourd&apos;hui ?</p>
+          {isAuthenticated && !isLearningQuestion(greeting) && (
+            <p className="text-lg font-normal leading-7 text-[var(--text-secondary)]">{ACCOUNT_SUBTITLE}</p>
+          )}
         </div>
 
         <form className="w-full max-w-3xl" onSubmit={submitQuestion}>

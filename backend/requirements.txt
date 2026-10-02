@@ -5,6 +5,7 @@
 # Web framework
 fastapi
 uvicorn[standard]
+slowapi
 
 # Database
 sqlalchemy
@@ -16,6 +17,7 @@ pgvector
 pydantic
 pydantic-settings
 python-dotenv
+setuptools<81
 httpx
 
 # Auth (declared in Phase 0, used in later phases)

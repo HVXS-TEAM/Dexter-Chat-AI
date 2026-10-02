@@ -12,7 +12,7 @@ from app.db.session import get_db
 from app.models.classes import Classe
 from app.models.user import User
 from app.schemas.classes import ClassCreate, ClassJoinRequest, ClassJoinResponse, ClassRead, ClassReadStudent
-from app.services.classes import create_class, get_class, join_class, list_classes
+from app.services.classes import create_class, get_class, join_class, join_class_by_code, list_classes
 
 router = APIRouter(tags=["classes"])
 
@@ -52,6 +52,26 @@ def read_classes(
     rows = list_classes(db, current_user)
     include_code = current_user.role == "professeur"
     return [_normalize_class_payload(row, include_code=include_code) for row in rows]
+
+
+@router.post("/classes/join", response_model=ClassJoinResponse)
+def join_class_by_code_endpoint(
+    payload: ClassJoinRequest,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+) -> ClassJoinResponse:
+    """Join a class using only an invitation code (student flow)."""
+    if current_user.role != "etudiant":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only students can join a class.")
+
+    try:
+        joined = join_class_by_code(db, current_user, payload.code_invitation)
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+        ) from exc
+
+    return _normalize_class_payload(joined, include_code=False)
 
 
 @router.post("/classes/{classe_id}/join", response_model=ClassJoinResponse)

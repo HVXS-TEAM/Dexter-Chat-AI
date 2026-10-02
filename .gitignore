@@ -23,3 +23,7 @@ dist/
 # OS
 .DS_Store
 Thumbs.db
+
+# Tests : bases SQLite temporaires creees par pytest (jamais versionnees)
+backend/test_*.db
+backend/test_*.db-journal

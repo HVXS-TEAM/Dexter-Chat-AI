@@ -30,6 +30,26 @@ def create_class(db: Session, professeur: User, nom: str) -> Classe:
     return classe
 
 
+def find_class_by_code(db: Session, code: str) -> Classe | None:
+    """Return the class matching an invitation code (case-insensitive)."""
+    normalized = code.strip().upper()
+    if not normalized:
+        return None
+    return (
+        db.query(Classe)
+        .filter(Classe.code_invitation == normalized)
+        .first()
+    )
+
+
+def join_class_by_code(db: Session, etudiant: User, code: str) -> Classe:
+    """Join a class resolved from an invitation code (case-insensitive)."""
+    classe = find_class_by_code(db, code)
+    if classe is None:
+        raise ValueError("Invalid invitation code.")
+    return join_class(db, classe, etudiant, code)
+
+
 def get_class(db: Session, classe_id: int) -> Classe | None:
     """Return a class by identifier."""
     return db.query(Classe).filter(Classe.id == classe_id).first()

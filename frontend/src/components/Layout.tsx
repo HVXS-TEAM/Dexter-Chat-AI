@@ -15,6 +15,7 @@ const navigationItems: NavigationItem[] = [
   { label: 'Recherche', to: '/recherche', icon: 'search' },
   { label: 'Chat', to: '/chat', icon: 'chat' },
   { label: 'Mes matières', to: '/matieres', icon: 'auto_stories' },
+  { label: 'Mes classes', to: '/classes', icon: 'groups' },
   { label: 'Historique', to: '/historique', icon: 'history' },
   { label: 'Profil', to: '/profil', icon: 'account_circle', section: 'profile' },
   { label: 'Paramètres', to: '/profil#parametres', icon: 'settings', section: 'settings' },

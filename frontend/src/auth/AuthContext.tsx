@@ -8,8 +8,9 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import axios from 'axios'
+import axios, { AxiosHeaders, type InternalAxiosRequestConfig } from 'axios'
 import { login as loginApi, refreshToken as refreshTokenApi, register as registerApi } from './api'
+import { disableGuestMode } from './guestMode'
 import type { LoginPayload, RegisterPayload, TokenPair, User } from './types'
 
 interface AuthContextValue {
@@ -52,7 +53,7 @@ interface AuthProviderProps {
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const refreshPromise = useRef<Promise<TokenPair> | null>(null)
+  const refreshPromise = useRef<Promise<TokenPair | null> | null>(null)
 
   const getAccessToken = useCallback((): string | null => {
     return localStorage.getItem(ACCESS_TOKEN_KEY)
@@ -137,7 +138,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const interceptor = axios.interceptors.response.use(
       (response) => response,
       async (error) => {
-        const originalRequest = error.config as { _retry?: boolean }
+        const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
 
         if (
           axios.isAxiosError(error) &&
@@ -148,10 +149,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
           const newTokens = await silentRefresh()
           if (newTokens) {
-            originalRequest.headers = {
-              ...originalRequest.headers,
-              Authorization: `Bearer ${newTokens.access_token}`,
-            }
+            const headers = AxiosHeaders.from(originalRequest.headers)
+            headers.set('Authorization', `Bearer ${newTokens.access_token}`)
+            originalRequest.headers = headers
             return axios(originalRequest)
           } else {
             logout()
@@ -171,6 +171,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     async (payload: LoginPayload): Promise<void> => {
       const tokens = await loginApi(payload)
       storeTokens(tokens)
+      disableGuestMode()
       axios.defaults.headers.common.Authorization = `Bearer ${tokens.access_token}`
       await fetchCurrentUser(tokens.access_token)
     },

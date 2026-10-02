@@ -10,6 +10,7 @@ from app.services.classes import (
     create_class,
     generate_invitation_code,
     join_class,
+    join_class_by_code,
     list_classes,
 )
 
@@ -84,6 +85,40 @@ def test_join_class_already_member_raises(db):
 
     with pytest.raises(ValueError, match="Already a member of this class."):
         join_class(db, classe, etudiant, classe.code_invitation)
+
+
+def test_join_class_by_code_success(db):
+    professeur = _user(1, "professeur")
+    classe = create_class(db, professeur, "Maths")
+    etudiant = _user(2, "etudiant")
+
+    joined = join_class_by_code(db, etudiant, classe.code_invitation.lower())
+
+    assert joined.id == classe.id
+    row = (
+        db.query(ClasseMembre)
+        .filter(ClasseMembre.classe_id == classe.id, ClasseMembre.etudiant_id == 2)
+        .one()
+    )
+    assert row.joined_at is not None
+
+
+def test_join_class_by_code_unknown_code_raises(db):
+    professeur = _user(1, "professeur")
+    create_class(db, professeur, "Maths")
+    etudiant = _user(2, "etudiant")
+
+    with pytest.raises(ValueError, match="Invalid invitation code."):
+        join_class_by_code(db, etudiant, "ZZZZZZZZ")
+
+
+def test_join_class_by_code_blank_code_raises(db):
+    professeur = _user(1, "professeur")
+    create_class(db, professeur, "Maths")
+    etudiant = _user(2, "etudiant")
+
+    with pytest.raises(ValueError, match="Invalid invitation code."):
+        join_class_by_code(db, etudiant, "   ")
 
 
 def test_list_classes_student_returns_only_joined(db):

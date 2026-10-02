@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from datetime import datetime
 
+from typing import Literal
+
 from pydantic import BaseModel, ConfigDict, Field
 
 
@@ -58,7 +60,14 @@ class MessageRead(BaseModel):
     sous_theme_detecte: str | None
     mode_utilise: str
     sources_rag: list[str] | None
+    feedback: str | None = None
     created_at: datetime
+
+
+class MessageFeedbackUpdate(BaseModel):
+    """Payload used to update a feedback reaction on a message."""
+
+    feedback: Literal["up", "down"]
 
 
 class ConversationDetailRead(ConversationRead):

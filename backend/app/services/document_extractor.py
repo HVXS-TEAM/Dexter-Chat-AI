@@ -5,6 +5,41 @@ from __future__ import annotations
 from io import BytesIO
 from pathlib import Path
 
+from app.config import settings
+
+_OCR_READY = False
+
+
+def _configure_tesseract() -> None:
+    """Point pytesseract at the OCR engine, once per process.
+
+    Raises ``ValueError`` with an explicit message when the engine is missing:
+    an unreadable image must never be reported as an anonymous failure.
+    """
+    global _OCR_READY
+    if _OCR_READY:
+        return
+
+    import pytesseract
+
+    if settings.tesseract_cmd:
+        pytesseract.pytesseract.tesseract_cmd = settings.tesseract_cmd
+    try:
+        pytesseract.get_tesseract_version()
+    except Exception as exc:
+        raise ValueError(
+            "Le moteur OCR Tesseract est introuvable : renseignez TESSERACT_CMD dans "
+            ".env (voir .env.example), puis redemarrez le backend."
+        ) from exc
+    _OCR_READY = True
+
+
+def _ocr_arguments() -> str:
+    """Return the extra tesseract arguments (language data directory)."""
+    if settings.tessdata_dir:
+        return f'--tessdata-dir "{settings.tessdata_dir}"'
+    return ""
+
 
 def extract_text(filename: str, file_bytes: bytes) -> str:
     """Extract plain text from PDF, DOCX, PPTX, images, TXT, or MD."""
@@ -36,9 +71,15 @@ def extract_text(filename: str, file_bytes: bytes) -> str:
         text = "\n\n".join(slides)
     elif suffix in {".png", ".jpg", ".jpeg"}:
         from PIL import Image
+
         import pytesseract
 
-        text = pytesseract.image_to_string(Image.open(BytesIO(file_bytes)))
+        _configure_tesseract()
+        text = pytesseract.image_to_string(
+            Image.open(BytesIO(file_bytes)),
+            lang=settings.ocr_lang,
+            config=_ocr_arguments(),
+        )
     else:
         raise ValueError(f"Unsupported document type: {suffix or 'unknown'}")
 
