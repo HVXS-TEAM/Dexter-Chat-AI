@@ -2089,5 +2089,6 @@ comportement modifié. **Dépendances (règle 14) : sans objet** (aucune install
 - recherche `menuitembutton` : **0 occurrence de prescription active** (seule la citation de l'erratum subsiste) ;
 - aucun test concerné (constat ARIA documentaire, pas de logique) ; `backend/uploads/` non touché par l'étape.
 
-**Statut : étape 4 appliquée et vérifiée — VALIDATION UTILISATEUR EN ATTENTE (règle 11).**
-Périmètre git touché, non commité : `M PROMPT_COPILOT_CHAT_RICHE.md` (+ la présente section de `PROGRESS.md`).
+**Statut : étape 4 appliquée et vérifiée — VALIDÉE PAR L'UTILISATEUR (03/10/2026, commit
+`836f7ff` ci-dessous).**
+Périmètre git touché, commité : `M PROMPT_COPILOT_CHAT_RICHE.md` (+ la présente section de `PROGRESS.md`).
