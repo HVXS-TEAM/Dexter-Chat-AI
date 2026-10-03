@@ -1908,6 +1908,99 @@ journaux de preuve conservés dans `%TEMP%` (`dexter_a2_baseline.log`, `dexter_a
 4. Le serveur de dev sur :8000 (PIDs 18264/23088, lancés 07:27:46 **sans `--reload`** dans la ligne de commande)
    tourne encore sur le **code d'avant A2** → **redémarrage requis pour activer le préchargement**.
 
-**Statut : correctif A2 appliqué et vérifié par exécution — VALIDATION UTILISATEUR EN ATTENTE (règle 11).**
-Périmètre git touché, non commité : `M backend/app/main.py` (+ la présente section de `PROGRESS.md`).
-Prochaine étape de l'ordre acté : **étape 2 = harnais `backend/scripts/upload_test.py`** (PNG corrompu).
+**Statut : correctif A2 appliqué et vérifié par exécution — VALIDÉ PAR L'UTILISATEUR (03/10/2026, commit `b5a0d73`).**
+Ordre de reprise acté : **étape 2 = harnais `backend/scripts/upload_test.py`** (PNG corrompu) — en cours ci-dessous.
+
+### Étape 2 de l'ordre — harnais `upload_test.py` : PNG corrompu remplacé par un PNG OCR réel — 03/10/2026 (option B validée par l'utilisateur, règles 1 et 13)
+
+**Note d'intention (règle 4)** : ce qu'on devait faire — le harnais embarquait un PNG 1×1 au CRC IHDR invalide, donc
+l'étape UPLOAD_PNG ne testait jamais l'OCR, seulement le chemin 422 « fichier illisible » ; ce qui a été fait
+concrètement — `_build_ocr_png()` génère à la volée un PNG lisible portant « Dexter TVA 20% » (même recette que
+`tests/test_document_extractor_ocr.py`), l'étape UPLOAD_PNG l'utilise, et un échec de génération affiche
+`UPLOAD_PNG (image) : IGNOREE -> cause` au lieu de planter le diagnostic ; ce que ça change — le diagnostic exerce
+désormais le vrai chemin OCR (200/201 + indexation) au lieu du chemin d'erreur. **Dépendances (règle 14) : aucune
+nouvelle** (Pillow déjà dans `requirements.txt`, `io` = stdlib ; aucune installation faite). Périmètre strict :
+`backend/scripts/upload_test.py` seul (règle 8 — `run_upload_test.bat` et `make_png.js` utilisent déjà le PNG valide
+de 70 octets, vérifié par exécution, non touchés).
+
+**Preuves par exécution (avant modification)** : PNG du harnais → `OSError: broken data stream when reading image
+file` (CORROMPU) ; PNG du `.bat`/`.js` → OK (70 octets, mode RGBA). Le PNG généré (900×200, Arial 48, 8 004 octets)
+passe PIL (`mode RGB`) et l'OCR réel retourne exactement `'Dexter TVA 20%'` (moteur `C:\Program Files\Tesseract-OCR`,
+données `C:\Tools\tessdata`, langue `fra` — configuration `.env` existante, non modifiée).
+
+**Preuves par exécution (après modification)** :
+- `_build_ocr_png()` importé depuis le harnais → 8 004 octets, PIL OK, OCR `'Dexter TVA 20%'` avec `Dexter` + `TVA`
+  lisibles ;
+- branche d'échec forcée (`FONT_CANDIDATES` pointant sur une police inexistante) → `RuntimeError` explicite, affichée
+  par la branche `IGNORREE`, diagnostic non planté ;
+- `py_compile scripts/upload_test.py` → OK ; recherche `89504e47|fromhex` dans le harnais → **0 occurrence**
+  (plus aucun octet en dur) ;
+- périmètre concerné (`test_document_extractor_ocr.py` + `test_documents.py`) → **11 passed en 10,90 s** ;
+  6 fichiers ré-écrits dans `backend/uploads/` (même cause connue : `conftest.py` n'isole pas `UPLOAD_DIR`) →
+  **nettoyés, 0 fichier**.
+
+**Statut : étape 2 appliquée et vérifiée par exécution — VALIDÉE PAR L'UTILISATEUR (03/10/2026).**
+Extension demandée avant le commit : **autres formats d'image** (option 2 validée : webp + bmp + gif + tif/tiff,
+1ère frame — voir section suivante). Périmètre git touché, non commité : `M backend/scripts/upload_test.py`
+(+ la présente section de `PROGRESS.md`).
+Prochaine étape de l'ordre acté : **checkpoint 1-bis** (6 statuts d'indexation).
+
+### Étape 2-bis de l'ordre — formats d'image : webp/bmp/gif/tif/tiff acceptés (OCR 1ère frame) — 03/10/2026 (option 2 validée par l'utilisateur, règles 1 et 13)
+
+**Note d'intention (règle 4)** : ce qu'on devait faire — autoriser les formats d'image courants au-delà de
+png/jpg/jpeg ; ce qui a été fait concrètement — `SUPPORTED_EXTENSIONS` (+5 extensions), aiguillage `extract_text`
+vers `_extract_image_text`, `seek(0)` + `load()` (1ère frame pour GIF animé / TIFF multipage) et conversion en RGB
+pour les modes que Tesseract n'aime pas (palette, RGBA, CMYK) ; ce que ça change — un GIF animé ou un TIFF multipage
+est indexé sur sa 1ère frame (choix explicite : le besoin est la capture statique de cours, pas la vidéo ; lire
+toutes les frames multiplierait le coût OCR sans bénéfice). **Dépendances (règle 14) : aucune nouvelle**
+(Pillow + pytesseract déjà dans `requirements.txt` ; Pillow du venv vérifié capable : `webp=True`, 8 extensions
+enregistrées dont `.tif`/`.tiff`). Périmètre strict : `documents.py`, `document_extractor.py`, `config.py`
+(commentaire), `AttachMenu.tsx` (`accept` + sous-titre), `upload_test.py` (consigne docstring).
+
+**Preuves par exécution** : script `%TEMP%\dexter_imgfmt_ocr.py` (images générées en mémoire, texte « Dexter TVA 20% »)
+→ png/jpg/webp/bmp/gif/tif/tiff **TOUT OK** (OCR exact `'Dexter TVA 20%'` pour les 7, ex. webp 3 314 octets,
+bmp/tif 540 054/540 140 octets non compressés) ; GIF animé 2 frames (texte en 1ère) → **OK 1ère frame**.
+`py_compile` des 4 fichiers Python → OK. Périmètre tests (`test_document_extractor_ocr.py` + `test_documents.py`)
+→ **11 passed en 10,19 s** ; 6 fichiers ré-écrits dans `backend/uploads/` (cause connue `conftest.py`) → nettoyés,
+**0 fichier**.
+
+**Statut : étape 2-bis appliquée et vérifiée par exécution — VALIDÉE PAR L'UTILISATEUR (03/10/2026).**
+Les deux lots sont restés non commités (retard volontaire) : périmètre cumulé `M backend/app/routers/documents.py`,
+`M backend/app/services/document_extractor.py`, `M backend/app/config.py`,
+`M frontend/src/components/AttachMenu.tsx`, `M backend/scripts/upload_test.py` (+ la présente section de
+`PROGRESS.md`). Ordre de reprise acté : **checkpoint 1-bis** (6 statuts d'indexation) — en pause ci-dessous,
+remplacé par la demande **« extraction d'infos sur les images, un peu comme ChatGPT »**.
+
+### Étape 2-ter de l'ordre — images : résumé structuré style ChatGPT (description + entités + chiffres clés) — 03/10/2026 (option 3 validée par l'utilisateur, règles 1 et 13)
+
+**Note d'intention (règle 4)** : ce qu'on devait faire — à l'upload d'une image, produire une fiche d'analyse
+(description, entités, chiffres clés) à la ChatGPT ; ce qui a été fait concrètement — nouveau service
+`backend/app/services/image_summary.py` (LLM texte **déjà configuré**, aucune vision, aucune migration, aucun
+schéma) appelé par `rag_service.index_document` **uniquement pour les 8 extensions image** : le résumé devient le
+chunk 0 (`Resume de l'image :\n...\n\nTexte OCR :\n...`) donc interrogeable par le RAG ; un échec LLM (panne,
+réponse vide) est journalisé (warning) et l'OCR seul est indexé — l'indexation n'échoue jamais pour cette raison
+(règle 2 : la sûreté prime ; règle 6 : aucun `except` silencieux) ; ce que ça change — chaque image indexée porte
+désormais son analyse structurée en tête de chunks. **Dépendances (règle 14) : aucune nouvelle** (`get_llm_provider`
+existant ; `temperature=0.2`, `max_tokens=400`, prompt FR anti-hallucination « uniquement à partir du texte fourni,
+sans inventer »). **Interface (règle 3)** : aucun composant visuel inventé — rien dans `documentation/`, aucune
+maquette de fiche image dans la spec `chat_ia_dexter` (vérifié : thread + composer uniquement) — donc **aucun
+changement frontend** : la fiche enrichit les chunks RAG que Dexter restitue dans le fil de chat existant.
+
+**Bug trouvé et corrigé avant validation (règle 2)** : l'import différé de `get_llm_provider` dans la fonction
+cassait le `monkeypatch` des tests (`AttributeError: module has no attribute 'get_llm_provider'`, 3 échecs
+prouvés par exécution) → import remonté en tête de module, seule correction possible (le chemin patché par les
+tests doit exister à l'import).
+
+**Preuves par exécution** : `tests/test_image_summary.py` (nouveau, 3 tests, LLM simulé) → **3 passed** (résumé en
+chunk 0 position 0 ; panne LLM → OCR seul, statut `indexe` ; TXT → 0 appel LLM) ; périmètre voisin
+(`test_document_extractor_ocr.py` + `test_documents.py` + `test_image_summary.py`) → **14 passed en 13,51 s** ;
+périmètre chat (5 fichiers, non régression du RAG) → **35 passed en 19,47 s** ; **suite complète → 122 passed en
+81,01 s** (log `%TEMP%\\dexter_fullsuite_commit.log`, 0 échec, warnings hérités slowapi/httpx/anyio uniquement) ;
+12 fichiers ré-écrits dans `backend/uploads/` par la suite (cause connue `conftest.py`) → **nettoyés, 0 fichier**.
+
+**Statut : étape 2-ter appliquée et vérifiée par exécution — VALIDÉE PAR L'UTILISATEUR (03/10/2026, commit
+ci-dessous).**
+Périmètre git touché, commité : `M backend/app/services/rag_service.py`,
+`+ backend/app/services/image_summary.py`, `+ backend/tests/test_image_summary.py` (+ la présente section de
+`PROGRESS.md`, cumulée aux lots 2 et 2-bis commités ensemble).
+Prochaine étape de l'ordre acté : **checkpoint 1-bis** (6 statuts d'indexation).

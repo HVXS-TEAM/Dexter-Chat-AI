@@ -34,7 +34,7 @@ class Settings(BaseSettings):
     rag_min_score: float = 0.5
     rag_max_chunks: int = 5
     upload_dir: str = "uploads"
-    # OCR des documents images (png/jpg/jpeg) — voir .env.example.
+    # OCR des documents images (png/jpg/jpeg/webp/bmp/gif/tif/tiff, 1ere frame) — voir .env.example.
     # Vides par defaut : le service leve alors une erreur explicite et journalisee
     # si le moteur Tesseract est introuvable (jamais d'echec silencieux).
     tesseract_cmd: str = ""

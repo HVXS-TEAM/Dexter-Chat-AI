@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from sqlalchemy.orm import Session
 
 from app.models.document import Document, DocumentChunk
@@ -9,12 +11,20 @@ from app.services import classifier
 from app.services.document_chunker import chunk_text
 from app.services.document_extractor import extract_text
 from app.services.embedding_service import embed_text, embed_texts
+from app.services.image_summary import IMAGE_EXTENSIONS, summarize_image_ocr
 
 
 def index_document(db: Session, document: Document, file_bytes: bytes) -> Document:
     """Extract, chunk, embed, and persist a document."""
     document.statut_indexation = "pending"
     text = extract_text(document.titre, file_bytes)
+    if Path(document.titre or "").suffix.lower() in IMAGE_EXTENSIONS:
+        # ChatGPT-style enrichment: the structured summary becomes chunk 0 so it
+        # is retrievable by RAG. A None summary (provider down, empty answer)
+        # keeps the raw OCR text alone — indexing never fails for this reason.
+        summary = summarize_image_ocr(document.titre, text)
+        if summary:
+            text = f"Resume de l'image :\n{summary}\n\nTexte OCR :\n{text}"
     classification = classifier.classify(text[:4000])
     chunks = chunk_text(text)
     embeddings = embed_texts([chunk for chunk, _ in chunks])

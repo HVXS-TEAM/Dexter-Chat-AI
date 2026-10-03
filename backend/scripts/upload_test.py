@@ -10,7 +10,8 @@ puis enchaine :
 
   1. login
   2. creation d'une conversation
-  3. upload d'une image PNG   (met en evidence le support OCR)
+  3. upload d'une image PNG   (met en evidence le support OCR ; le backend
+     accepte aussi .jpg/.jpeg/.webp/.bmp/.gif/.tif/.tiff, 1ere frame)
   4. upload d'un fichier .txt (verifie le chemin nominal)
   5. POST /chat/message       (verifie la generation LLM)
 
@@ -18,6 +19,7 @@ Chaque appel affiche le code HTTP reel et la reponse brute.
 """
 from __future__ import annotations
 
+import io
 import sys
 
 import httpx
@@ -33,12 +35,48 @@ REGISTER = {
     "annee": "BTS 2",
 }
 
-PNG_BYTES = bytes.fromhex(
-    "89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4"
-    "890000000a49444154789c6360000002000100ffff03000006000557bfabd400"
-    "00000049454e44ae426082"
-)
+PNG_TEXT = "Dexter TVA 20%"
+FONT_CANDIDATES = ("arial.ttf", "C:/Windows/Fonts/arial.ttf", "DejaVuSans.ttf")
 TXT_BYTES = "Question de test : comment calculer la TVA sur 1000 euros ?\n".encode("utf-8")
+
+
+def _build_ocr_png() -> bytes:
+    """Genere a la volee un PNG lisible portant PNG_TEXT (meme recette que les tests OCR).
+
+    Le harnais embarquait un PNG 1x1 au CRC IHDR invalide (OSError: broken data
+    stream) : l'etape UPLOAD_PNG ne testait donc jamais l'OCR, seulement le chemin
+    422 « fichier illisible ». Le PNG est genere (Pillow, deja une dependance du
+    projet) au lieu d'etre colle en hexadecimal : aucun risque de re-corruption.
+    Une absence de police ou de Pillow est signalee explicitement (jamais silencieuse).
+    """
+    try:
+        from PIL import Image, ImageDraw, ImageFont
+    except ImportError as exc:
+        raise RuntimeError(
+            "Pillow est requis pour generer l'image OCR du diagnostic : "
+            "installez les dependances du backend (requirements.txt)."
+        ) from exc
+
+    font = None
+    tried = []
+    for candidate in FONT_CANDIDATES:
+        tried.append(candidate)
+        try:
+            font = ImageFont.truetype(candidate, 48)
+            break
+        except OSError:
+            continue
+    if font is None:
+        raise RuntimeError(
+            "Aucune police utilisable pour generer l'image OCR "
+            f"(essayees : {', '.join(tried)})."
+        )
+
+    image = Image.new("RGB", (900, 200), "white")
+    ImageDraw.Draw(image).text((40, 60), PNG_TEXT, fill="black", font=font)
+    buffer = io.BytesIO()
+    image.save(buffer, format="PNG")
+    return buffer.getvalue()
 
 
 def show(label: str, response: httpx.Response) -> None:
@@ -84,14 +122,21 @@ def main(argv: list[str]) -> int:
         conversation_id = created.json()["id"]
         print(f"CONVERSATION_ID = {conversation_id}")
 
-        safe(
-            "UPLOAD_PNG (image)",
-            lambda: client.post(
-                f"/conversations/{conversation_id}/documents",
-                files={"file": ("diag_image.png", PNG_BYTES, "image/png")},
-                headers=headers,
-            ),
-        )
+        try:
+            png_bytes = _build_ocr_png()
+        except RuntimeError as exc:
+            print(f"UPLOAD_PNG (image) : IGNOREE -> {exc}")
+            png_bytes = None
+
+        if png_bytes is not None:
+            safe(
+                "UPLOAD_PNG (image)",
+                lambda: client.post(
+                    f"/conversations/{conversation_id}/documents",
+                    files={"file": ("diag_image.png", png_bytes, "image/png")},
+                    headers=headers,
+                ),
+            )
 
         safe(
             "UPLOAD_TXT (texte)",

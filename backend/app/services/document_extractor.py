@@ -100,7 +100,12 @@ def _extract_pptx(file_bytes: bytes) -> str:
 
 
 def _extract_image_text(file_bytes: bytes) -> str:
-    """OCR an image. A decoding failure means "unreadable file"; an OCR engine failure does not."""
+    """OCR an image. A decoding failure means "unreadable file"; an OCR engine failure does not.
+
+    Animated (GIF) or multi-page (TIFF) inputs are read on their first frame only:
+    course material is a static capture, and reading every frame would multiply
+    the OCR cost without user benefit.
+    """
     import pytesseract
     from PIL import Image
 
@@ -111,8 +116,16 @@ def _extract_image_text(file_bytes: bytes) -> str:
         # OCR. PIL signals undecodable data with UnidentifiedImageError, a subclass
         # of OSError, so a single OSError handler covers every decoding failure.
         image.load()
+        try:
+            # First frame only for animated/multi-page inputs (GIF, TIFF).
+            image.seek(0)
+            image.load()
+        except EOFError as exc:
+            raise UnreadableDocumentError(f"The image file cannot be read: {exc}") from exc
     except OSError as exc:
         raise UnreadableDocumentError(f"The image file cannot be read: {exc}") from exc
+    if image.mode not in {"RGB", "L"}:
+        image = image.convert("RGB")
     # pytesseract.TesseractError is a server-side problem: it is deliberately left
     # to propagate so the endpoint answers with a server error.
     return pytesseract.image_to_string(image, lang=settings.ocr_lang)
@@ -120,6 +133,9 @@ def _extract_image_text(file_bytes: bytes) -> str:
 
 def extract_text(filename: str, file_bytes: bytes) -> str:
     """Extract plain text from PDF, DOCX, PPTX, images, TXT, or MD.
+
+    Supported images: PNG, JPG, JPEG, WEBP, BMP, GIF and TIF/TIFF (first frame
+    only for animated or multi-page inputs).
 
     Failures caused by the uploaded content raise ``UnreadableDocumentError`` so the
     caller can answer with a client error; failures caused by the server environment
@@ -137,7 +153,7 @@ def extract_text(filename: str, file_bytes: bytes) -> str:
         text = _extract_docx(file_bytes)
     elif suffix == ".pptx":
         text = _extract_pptx(file_bytes)
-    elif suffix in {".png", ".jpg", ".jpeg"}:
+    elif suffix in {".png", ".jpg", ".jpeg", ".webp", ".bmp", ".gif", ".tif", ".tiff"}:
         text = _extract_image_text(file_bytes)
     else:
         raise ValueError(f"Unsupported document type: {suffix or 'unknown'}")

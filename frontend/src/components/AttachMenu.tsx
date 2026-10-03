@@ -79,8 +79,8 @@ export default function AttachMenu({ onFilesSelected, onClose }: AttachMenuProps
       <AttachOption
         icon="image"
         title="Image"
-        subtitle="PNG, JPG — OCR intégré"
-        accept=".png,.jpg,.jpeg"
+        subtitle="PNG, JPG, WEBP, BMP, GIF, TIFF — OCR intégré"
+        accept=".png,.jpg,.jpeg,.webp,.bmp,.gif,.tif,.tiff"
         onFilesSelected={onFilesSelected}
       />
     </div>

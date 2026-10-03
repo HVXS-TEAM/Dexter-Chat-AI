@@ -21,7 +21,7 @@ from app.services.document_extractor import UnreadableDocumentError
 from app.services.rag_service import index_document
 
 router = APIRouter(tags=["documents"])
-SUPPORTED_EXTENSIONS = {".pdf", ".docx", ".pptx", ".png", ".jpg", ".jpeg", ".txt", ".md"}
+SUPPORTED_EXTENSIONS = {".pdf", ".docx", ".pptx", ".png", ".jpg", ".jpeg", ".webp", ".bmp", ".gif", ".tif", ".tiff", ".txt", ".md"}
 
 _logger = logging.getLogger(__name__)
 
