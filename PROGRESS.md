@@ -2061,6 +2061,33 @@ seul l'avertissement de dépréciation disparaît. **Dépendances (règle 14) : 
 - 6 fichiers ré-écrits dans `backend/uploads/` par la suite (cause connue `conftest.py` n'isole pas `UPLOAD_DIR`) →
   **nettoyés, 0 fichier**.
 
-**Statut : étape 3 appliquée et vérifiée par exécution — VALIDATION UTILISATEUR EN ATTENTE (règle 11).**
-Périmètre git touché, non commité : `M backend/app/routers/documents.py` (1 ligne) (+ la présente section de `PROGRESS.md`).
+**Statut : étape 3 appliquée et vérifiée par exécution — VALIDÉE PAR L'UTILISATEUR (03/10/2026, commit
+`9ee9f34` ci-dessous).**
+Périmètre git touché, commité : `M backend/app/routers/documents.py` (1 ligne) (+ la présente section de `PROGRESS.md`).
 Prochaine étape de l'ordre acté : **document `PROMPT_COPILOT_CHAT_RICHE.md` l. 101** (`role="menuitembutton"` inexistant).
+
+### Étape 4 de l'ordre — erratum ARIA `PROMPT_COPILOT_CHAT_RICHE.md` l. 101 — 03/10/2026 (option validée par l'utilisateur, règles 1 et 13)
+
+**Note d'intention (règle 4)** : ce qu'on devait faire — solder la prescription fautive `role="menuitembutton"` du
+document de cadrage (rôle **inexistant** en WAI-ARIA : seuls `menuitem`, `menuitemcheckbox`, `menuitemradio` existent)
+; ce qui a été fait concrètement — **document seul corrigé** (`PROMPT_COPILOT_CHAT_RICHE.md`, 1 ligne `menuitembutton`
+→ `menuitem` + encadré d'erratum qui énonce l'erreur et confirme la conformité préexistante du code) ; ce que ça
+change — le document et le code (`AttachMenu.tsx` l. 33, inchangé) prescrivent désormais le même rôle valide ; aucun
+comportement modifié. **Dépendances (règle 14) : sans objet** (aucune installation, aucun code touché).
+
+**Preuves par vérification (lecture, aucun code modifié)** :
+- `PROMPT_COPILOT_CHAT_RICHE.md` l. 101 → `role="menuitem"` ; l'erratum l. 110-113 cite l'ancienne valeur fautive à
+  dessein (traçabilité) ;
+- `AttachMenu.tsx` l. 33 → `role="menuitem"` sur `<button>` — inchangé, déjà conforme ;
+- **Analyse Copilot (protocole : fichiers sauvegardés, 03/10/2026)** : le frontend sur disque affiche **déjà** les
+  8 formats (`subtitle="PNG, JPG, WEBP, BMP, GIF, TIFF — OCR intégré"`,
+  `accept=".png,.jpg,.jpeg,.webp,.bmp,.gif,.tif,.tiff"`, l. 82-83) — la « réduction à 3 formats » initialement
+  constatée venait d'un `git diff` lu à l'envers (comparaison HEAD→disque inversée : c'est HEAD qui portait les
+  3 formats) ; **aucune régression Copilot, aucune restauration nécessaire** ;
+- le doc l. 104-106 est aligné sur ces 8 formats (référence `SUPPORTED_EXTENSIONS` backend + OCR 1ère frame,
+  étape 2-bis) ;
+- recherche `menuitembutton` : **0 occurrence de prescription active** (seule la citation de l'erratum subsiste) ;
+- aucun test concerné (constat ARIA documentaire, pas de logique) ; `backend/uploads/` non touché par l'étape.
+
+**Statut : étape 4 appliquée et vérifiée — VALIDATION UTILISATEUR EN ATTENTE (règle 11).**
+Périmètre git touché, non commité : `M PROMPT_COPILOT_CHAT_RICHE.md` (+ la présente section de `PROGRESS.md`).

@@ -98,12 +98,19 @@ Pas de rehype-highlight. Le composant doit être stable pendant le streaming (re
 ### B3. `frontend/src/components/AttachMenu.tsx` (nouveau)
 Menu popup ouvert au clic sur le trombone, positionné au-dessus de la barre de saisie (aligné à gauche du trombone),
 style ChatGPT : fond `var(--surface)`, bordure `var(--border-default)`, `rounded-[12px]`, ombre douce,
-`role="menu"`. Deux items (`role="menuitembutton"`) :
+`role="menu"`. Deux items (`role="menuitem"`) :
 1. Icône `description` — « Document de cours » — sous-titre « PDF, Word, PowerPoint, TXT, Markdown » →
    `<input type="file" multiple accept=".pdf,.docx,.pptx,.txt,.md">` ;
-2. Icône `image` — « Image » — sous-titre « PNG, JPG — OCR intégré » → `<input type="file" multiple accept=".png,.jpg,.jpeg">`.
+2. Icône `image` — « Image » — sous-titre « PNG, JPG, WEBP, BMP, GIF, TIFF — OCR intégré » →
+   `<input type="file" multiple accept=".png,.jpg,.jpeg,.webp,.bmp,.gif,.tif,.tiff">` (aligné sur
+   `SUPPORTED_EXTENSIONS` backend : PNG, JPG/JPEG, WEBP, BMP, GIF, TIF/TIFF — OCR 1ère frame, étape 2-bis).
 Fermeture : clic extérieur **et** touche Échap (listeners `useEffect` nettoyés). Icônes Material Symbols.
 Accessibilité : `aria-haspopup`, `aria-expanded` sur le trombone, focus visible.
+
+> **Erratum 03/10/2026** : la version antérieure de ce document prescrivait `role="menuitembutton"`,
+> qui **n'existe pas** dans la spécification WAI-ARIA (les rôles de menu valides sont `menuitem`,
+> `menuitemcheckbox` et `menuitemradio`). Le code existant (`AttachMenu.tsx` l. 33, `role="menuitem"`
+> sur un `<button>`) était déjà conforme ; c'est le document qui est corrigé ici, pas le code.
 
 ### B4. `frontend/src/conversations/api.ts` (nouveau)
 - Type `ConversationRead` (champs du schéma backend `ConversationRead`) et
