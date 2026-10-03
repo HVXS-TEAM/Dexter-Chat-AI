@@ -1,5 +1,11 @@
 """Dexter backend application entrypoint."""
 
+import logging
+import threading
+import time
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import _rate_limit_exceeded_handler
@@ -18,11 +24,57 @@ from app.routers.messages import router as messages_router
 from app.routers.quiz import router as quiz_router
 from app.routers.users import router as users_router
 from app.rate_limiter import limiter
+from app.services.embedding_service import embed_text, get_embedding_model
+
+# The project configures no logging: application loggers propagate to the root
+# logger, whose effective level is WARNING, so `logging.getLogger(__name__).info`
+# would never be emitted. Uvicorn is the only logger already configured at INFO
+# level, therefore the preload trace is routed through it.
+_logger = logging.getLogger("uvicorn.error")
+
+
+def _preload_embedding_model() -> None:
+    """Load and warm the embedding model outside of any request thread.
+
+    The first load imports torch and sentence-transformers, and the first
+    inference initializes kernels and tokenizers. Both monopolise the GIL
+    long enough to delay every other request (a login was measured above 60 s
+    while a load was in flight). A failure here is never fatal: the model
+    stays uncached, so the next real use retries through the lazy paths, and
+    the trace keeps the reason visible.
+    """
+    started = time.perf_counter()
+    try:
+        get_embedding_model()
+        # Warm the inference path too: a merely loaded model still spends ~5 s
+        # on its first encode. The text is a dummy warm-up, never stored.
+        embed_text("Dexter embedding warm-up.")
+    except Exception:  # noqa: BLE001 - the server must stay up; the cause is logged
+        _logger.exception(
+            "Embedding model preload failed; the load will be retried on first real use."
+        )
+        return
+    _logger.info("Embedding model preloaded in %.1f s.", time.perf_counter() - started)
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+    """Start serving immediately and warm the embedding model in the background."""
+    thread = threading.Thread(
+        target=_preload_embedding_model,
+        name="embedding-preload",
+        daemon=True,
+    )
+    thread.start()
+    _logger.info("Embedding model preload running in background thread.")
+    yield
+
 
 app = FastAPI(
     title="Dexter API",
     description="Chatbot tutor API for students and professors.",
     version="0.1.0",
+    lifespan=lifespan,
 )
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)

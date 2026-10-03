@@ -1828,3 +1828,86 @@ chemins explicites** (jamais `git add -A`, règle 8).
 antérieur) sont **corrigées** ci-dessus ; elles n'étaient vraies qu'avant le 03/10/2026. Un fichier ne pouvant pas
 citer son propre hash, le hash du **présent** commit de traçabilité reste lisible dans `git log` — même convention que
 les cycles 7 et 8 (l. 1551/1605).
+
+### Étape 1 de l'ordre — A2 (gel à froid) : préchargement non bloquant — 03/10/2026 (option 1B validée par l'utilisateur, règles 1 et 13)
+
+**Note d'intention (règle 4)** : ce qu'on devait faire — empêcher qu'une requête utilisateur (upload) gèle **tout** le
+backend pendant le chargement de `torch` / `sentence-transformers` ; ce qui a été fait concrètement — préchargement
+du modèle dans un **thread `daemon` lancé par le `lifespan`** (`backend/app/main.py` **seul fichier touché**, 52
+insertions, 0 suppression : chargement + `encode` factice de réchauffage) ; ce que ça change — `torch` n'est **plus
+jamais importé dans le fil d'une requête**, le serveur répond dès le démarrage (`asynccontextmanager` rend la main
+aussitôt après `thread.start()`), et un échec du préchargement est journalisé **sans faire tomber le serveur** (le
+modèle reste non caché → les chemins paresseux de `get_embedding_model()` / `embed_texts()` retentent au premier
+usage réel). **Dépendances (règle 14) : aucune nouvelle** (`logging`, `threading`, `time`, `contextlib`,
+`collections.abc` = stdlib ; trace via `uvicorn.error`, seul logger déjà configuré à INFO — le projet n'a aucune
+configuration de logging, `getLogger(__name__).info` serait abandonné par le root en WARNING ; commentaire explicite
+dans le code).
+
+**Rappel du bug** : premier appel à `embed_texts` → import `torch` + chargement de `intfloat/multilingual-e5-small`
+(le modèle est déjà en cache HF local : le coût est l'import + le chargement disque, pas le réseau) **sous GIL** dans
+le fil de la requête d'upload → **toutes** les routes synchrones retardées. Constat tracé l. 785-790 (`POST
+/auth/login` expirant au-delà de 60 s pendant la fenêtre, 0,6 s après).
+
+**Preuves par exécution (aucune supposition, piles jetables pour ne pas re-polluer la base de dev nettoyée)** :
+- **Référence « avant »** (processus frais, sans serveur) : `import sentence_transformers` **18,4 s** + chargement du
+  modèle **56,3 s** + encode 0,06 s → **TOTAL à froid 74,7 s** =
+  ce que l'ancien premier upload absorbait dans le fil de la requête ;
+- **Serveur jetable :8001** (DB SQLite temp, `UPLOAD_DIR` temp) : serveur disponible à **2,7 s** ; **19 cycles de
+  sondes pendant le préchargement** → `/health` 22-68 ms, `/auth/login` (401 attendu) **21-88 ms**, **0 échec,
+  0 timeout** ; journal serveur : `Embedding model preload running in background thread.` puis `Embedding model
+  preloaded in 74.9 s.` ;
+- **Serveur jetable :8002** (chemin de production, `backend/uploads/` réel) : préchargement **66,3 s** (journal) ;
+  REGISTER → 201 ; LOGIN → 200 ; CREATE_CONVERSATION → 201 ; **UPLOAD_TXT → 201 en 5,65 s** (contre ~74,7 s avant) ;
+- **Suite backend complète après réchauffage → 119 passed en 72,93 s** (avant A2 : 82,06 s ; après chargement seul :
+  76,98 s ; aucune régression, 0 failed/0 error) ; les tests instancient `TestClient(app)` **sans** gestionnaire de
+  contexte → le `lifespan` (donc le préchargement+réchauffage) **ne tourne pas en tests**, impact nul prouvé par
+  exécution ; l'import de `get_embedding_model` dans `main.py` n'importe pas `torch` (vérifié :
+  `'torch' in sys.modules` → False après import de `app.main`) ; comme attendu, la suite a ré-écrit **6 fichiers**
+  dans `backend/uploads/` (confirmation de l'observation n° 1) → **nettoyés, 0 fichier**.
+
+**Résidu constaté puis traité (option validée par l'utilisateur : réchauffage puis commit)** : le premier `encode`
+payait une initialisation unique (noyaux, tokenizer, premier forward) d'environ 5 s **après** le chargement du modèle
+(`:8002` : UPLOAD_TXT → 201 en **5,65 s** ; sur répétition `:8003` second upload → 201 en **4,60 s**, modèle chaud mais
+sans réchauffage). Raffinement ajouté : `_preload_embedding_model()` exécute désormais `embed_text("Dexter embedding
+warm-up.")` (texte factice, jamais stocké) dans le même thread de fond — 2 lignes utiles + docstring ajustée, toujours
+`main.py` seul, zéro nouvelle dépendance.
+- **Vérification de l'option au réel (`:8003`, SQLite jetable, `backend/uploads/` réel)** : préchargement journalisé
+  `Embedding model preloaded in 63.7 s.` (chargement + réchauffage en fond) ; serveur disponible à **0,6 s** ;
+  REGISTER → 201 (526 ms) ; LOGIN → 200 (336 ms) ; CONVERSATION → 201 (75 ms) ; **UPLOAD_TXT → 201 en 4,58 s**.
+- **Conclusion honnête** : les ≈ 4,5-5 s restants sont **dominés par l'appel réseau distant de classification LLM**
+  (`classifier.classify` → Groq `qwen/qwen3.8-27b`, timeout 30 s, clé lue dans `.env` racine — présente côté
+  utilisateur), pas par l'embedding local : le 2ᵉ upload `:8003` (4,60 s) et l'upload réchauffé `:8003` (4,58 s) sont
+  identiques à 0,02 s près, preuve que l'embedding n'est plus le goulot. **Le < 1 s visé n'est donc pas atteignable par
+  le réchauffage seul** : il exigerait de toucher au pipeline d'upload (classification asynchrone/différée ou
+  parallélisation extraction/classification/embeddings) = **nouvelle décision de conception hors A2**. A2 ferme ce
+  qu'il devait fermer : **plus aucun coût CPU local à froid dans le fil d'une requête, et plus aucun gel du backend**
+  (74,7 s déplacés en fond).
+- **Incident de mesure à tracer (erreur de ma part, sans impact sur la base de dev)** : la première sonde `:8003` a
+  hérité l'env du shell parent (`DB_URL` Postgres par défaut, Docker arrêté) → REGISTER/LOGIN en **500** (connexion
+  refusée 5432) ; relance propre avec `DB_URL` SQLite injecté **avant** l'import de `app.*` (même mécanisme qu'en
+  `:8002`) → 201/200/201/201. Leçon : un `uvicorn app.main:app` nu n'hérite **pas** le `DB_URL` d'un autre shell.
+
+**Résidus de vérification nettoyés** : 13 fichiers de fixtures (`lesson.txt`, `cours_compta.txt`, `corrompu.png`,
+`vide.txt`, tous suffixés d'un uuid) écrits dans le vrai `backend/uploads/` par la suite pytest (`conftest.py`
+n'isole **pas** `UPLOAD_DIR` — voir observation ci-dessous) + mes `a2warm*.txt` de la sonde `:8003` → supprimés
+(**`backend/uploads/` → 0 fichier, dossier conservé**) ; DB jetables SQLite supprimées ; fichier parasite
+`backend/%s` (139 Ko, créé par une coquille `%s` dans une de mes commandes de sonde — jamais commité) supprimé ;
+journaux de preuve conservés dans `%TEMP%` (`dexter_a2_baseline.log`, `dexter_a2_probe*.log`,
+`dexter_a2_pytest.log`, `dexter_a2_server*.log`, `dexter_a2_probe3.py`).
+
+**Observations signalées, hors périmètre (règle 8, non corrigées)** :
+1. `backend/tests/conftest.py` n'isole pas `UPLOAD_DIR` → **chaque suite complète ré-écrit des fixtures dans le vrai
+   `backend/uploads/`** (c'est l'origine des 6 fichiers retrouvés après le nettoyage) ; à corriger hors A2
+   (fixture `tmp_path` ou surcharge de `settings.upload_dir`) ;
+2. `UPLOAD_DIR` absolu **hors** de `backend/` → `documents.py` l. 75 (`target.relative_to(parents[2])`) lève
+   `ValueError` → **500** (constaté sur :8001 avec un dossier temp ; pas un bug de production avec `uploads/`, mais
+   une fragilité de configuration) ;
+3. **Environnement** : Docker Desktop **arrêté** (daemon injoignable, port 5432 fermé) → le conteneur Postgres de dev
+   est down → `/auth/login` du serveur de dev répond **500 (4 391 ms)** ; `/health` reste 200 car il ne teste pas la
+   base ;
+4. Le serveur de dev sur :8000 (PIDs 18264/23088, lancés 07:27:46 **sans `--reload`** dans la ligne de commande)
+   tourne encore sur le **code d'avant A2** → **redémarrage requis pour activer le préchargement**.
+
+**Statut : correctif A2 appliqué et vérifié par exécution — VALIDATION UTILISATEUR EN ATTENTE (règle 11).**
+Périmètre git touché, non commité : `M backend/app/main.py` (+ la présente section de `PROGRESS.md`).
+Prochaine étape de l'ordre acté : **étape 2 = harnais `backend/scripts/upload_test.py`** (PNG corrompu).
