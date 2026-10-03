@@ -46,7 +46,9 @@ Fichier de suivi d'état réel du projet, mis à jour à chaque étape.
 | `.env` local (valeurs de dev) | ✅ créé — DB_USER/DB_PASSWORD/DB_NAME/DB_URL/JWT_SECRET |
 | `config.py` | ✅ fiabilisé — chemin `.env` résolu depuis le fichier (indépendant du répertoire de lancement) |
 
-**Statut global Phase 0 : en cours (Voie B), en attente de validation utilisateur.**
+**Statut global Phase 0 (actualisé le 02/10/2026 — traçabilité) : Voie B en service et acceptée de fait** —
+aucune validation explicite n'avait été tracée, mais toutes les phases validées depuis (Auth 01/09/2026, etc.)
+s'y appuient ; Docker reste reporté après réparation Windows (voir « Contexte Docker / Windows » ci-dessus).
 
 ## Points d'attention (signalés, non résolus d'initiative)
 
@@ -151,7 +153,9 @@ Fichier de suivi d'état réel du projet, mis à jour à chaque étape.
 | Validation runtime (`validate_rag_runtime.py`) | ✅ 14/14 vérifications réelles passées le 09/09/2026 : health, inscriptions étudiant+professeur, création conversation, upload TXT, statut `indexe` + 1 chunk, question → réponse RAG (mode `mes_cours`, domaine comptabilité), partage prof → 200, étudiant → 403, type non supporté (.exe) → 400 |
 | Base de dev | ✅ nettoyée (0 users / conversations / documents / chunks) — dossier uploads et fichiers temporaires supprimés |
 
-**Statut : en attente de validation utilisateur (règle 11).**
+**Statut (actualisé le 02/10/2026 — traçabilité) : aucune validation explicite de cette phase n'a été tracée** —
+prompt validé le 08/09/2026, vérifications runtime 14/14 le 09/09/2026, volet frontend « documents dans le Chat »
+validé visuellement le 21/09/2026 (voir plus bas) ; validation formelle toujours ouverte si vous souhaitez la confirmer.
 
 ### Points mineurs signalés (non bloquants)
 - `SAWarning` SQLAlchemy dans `rag_service.py` (`document_id.in_(subquery)` → passer un `select()` explicite) — dépréciation SQLAlchemy 2.0, à moderniser en V1
@@ -693,6 +697,14 @@ pour `.png/.jpg/.jpeg`, mais le **binaire Tesseract OCR n'est pas installé** : 
 `pytesseract.get_tesseract_version()` → `TesseractNotFoundError: tesseract is not installed or it's not in your PATH`.
 Toute image lève donc une exception → `index_document` propage → `documents.py` (l. 72-83) répond 422.
 Confirmé en base : les 2 PNG de test ont `documents.statut_indexation = "erreur"` et **0 chunk**.
+
+**✅ Statut A1 au 03/10/2026 — CAUSE RACINE CORRIGÉE ET VÉRIFIÉE (détail et preuves : section « Checkpoints de
+revue » en fin de fichier).** Tesseract a été installé **hors dépôt** le 23/09/2026 (`.env` :
+`TESSERACT_CMD=C:\Program Files\Tesseract-OCR\tesseract.exe`, `TESSDATA_DIR=C:\Tools\tessdata`) → la cause décrite
+ci-dessus (« binaire non installé ») est **périmée sur ce point**. Le 422 persistait néanmoins : `_ocr_arguments()`
+passait `--tessdata-dir "<dir>"` à pytesseract, dont `shlex.split(config, posix=False)` (Windows) **conserve les
+guillemets** → `Error opening data file "<dir>"/fra.traineddata`. Correctif retenu : la variable `TESSDATA_PREFIX`
+(remède explicitement recommandé par le message d'erreur de Tesseract).
 
 
 **❌ BUG 2 — « Impossible de converser » (3 causes cumulées, toutes reproduites).**
@@ -1383,8 +1395,8 @@ une chose à la fois :
   dexter-calc) — 1A porte sur `calcul_result.unit`, pas sur les notes des calculateurs ;
 - `sous_theme_effectif` absent des `meta` non-calcul (voir point 3).
 
-**Statut : cycle 5 appliqué et vérifié (113 tests + harnais 18/18) — VALIDATION UTILISATEUR EN ATTENTE
-(règle 11)** ; signalement 12 clos, 5/13 en discipline de suivi, décision 4A reportée.
+**Statut (actualisé le 02/10/2026 — traçabilité) : cycle 5 appliqué et vérifié (113 tests + harnais 18/18), accepté de fait
+via l'arbitrage « Les deux » du 02/10/2026 qui a fondé le cycle 6** (clôture de ses 2 observations résiduelles) ; signalement 12 clos, 5/13 en discipline de suivi, décision 4A reportée.
 
 ---
 
@@ -1593,4 +1605,193 @@ nouvelle dépendance (règle 14), aucun code exécutable de produit touché (rè
 VALIDATION UTILISATEUR LE 02/10/2026 (règle 11)** ; commit de clôture effectué dans ce même commit
 (hash visible dans `git log`, non auto-référençable ici).
 
+---
 
+## Checkpoints de revue « reste à faire » — 02-03/10/2026
+
+Revue conduite **par checkpoints**, chacun marqué par l'utilisateur après correction d'un événement vérifiable.
+Ordre arbitré avec l'utilisateur (règle 13) : traçabilité (F) → **A1** OCR → A3/A4 + 4A → features différées (C) / V1.
+
+### CheckPoint 1 — traçabilité — VALIDÉ PAR L'UTILISATEUR (02/10/2026)
+
+3 statuts périmés de ce fichier actualisés, sans inventer aucune validation (lecture seule, aucun code touché) :
+l. 49-51 (Phase 0 → « Voie B en service et acceptée de fait »), l. 156-158 (RAG → « aucune validation explicite
+tracée » + jalons datés), l. 1390-1391 (cycle 5 → « accepté de fait via l'arbitrage "Les deux" du 02/10/2026
+fondant le cycle 6 »). Consigne utilisateur : **pas de commit à ce stade** (commit groupé, à sa demande — règle 11).
+
+Découverte signalée hors périmètre, **non touchée** (règles 8 et 13) : 6 statuts « VALIDATION UTILISATEUR EN
+ATTENTE » historiques (l. 873/943/1030/1227/1263/1294) — deux disposent d'une validation postérieure tracée
+(l. 1271/1333), les cycles 1-3 étant probablement implicites → **checkpoint 1-bis en attente d'arbitrage**.
+
+### CheckPoint 2 — A1 « upload d'images » — CORRIGÉ, VÉRIFIÉ ET VALIDÉ PAR L'UTILISATEUR (03/10/2026)
+
+Arbitrage utilisateur (règle 13) : **option A** — variable `TESSDATA_PREFIX` posée par le service (robuste aux
+espaces dans le chemin) **+** test de non-régression.
+
+**État réel constaté par exécution (règle 2), avant toute édition :**
+- Tesseract **est installé** : `pytesseract.get_tesseract_version()` → `5.4.0.20240606` ; `C:\Tools\tessdata`
+  contient `fra.traineddata` (14 213 351 o), `eng`, `osd` ; `.env` modifié le **23/09/2026 22:16:44** ;
+- le tessdata **par défaut** (`C:\Program Files\Tesseract-OCR\tessdata`) ne contient **pas** `fra` → aucun repli
+  possible sans `TESSDATA_DIR` ;
+- backend en service redémarré le **02/10/2026 22:23:09** (donc `.env` bien pris en compte) ;
+- **bug toujours actif** : `extract_text()` sur une image valide levait `TesseractError (1, 'Error opening data file
+  "C:\Tools\tessdata"/fra.traineddata … Failed loading language fra')` ;
+- **cause racine** : `pytesseract/pytesseract.py` l. 267 → `shlex.split(config, posix=not_windows)` ; sous Windows
+  `posix=False` **conserve les guillemets** produits par `_ocr_arguments()` → chemin invalide pour Tesseract.
+
+**Correctif appliqué (option A) :**
+- `backend/app/services/document_extractor.py` : `_configure_tesseract()` exporte désormais
+  `os.environ["TESSDATA_PREFIX"] = settings.tessdata_dir` (commentaire du piège de quoting) ; `_ocr_arguments()`
+  supprimée et `config=_ocr_arguments()` retiré de l'appel `image_to_string()` ;
+- `backend/tests/test_document_extractor_ocr.py` (**nouveau**) : 2 tests — export de `TESSDATA_PREFIX` et OCR réel
+  d'un PNG généré en mémoire, avec *skip* explicite et motivé si le moteur ou les données de langue sont absents.
+Aucune dépendance nouvelle (règle 14) ; aucune zone hors périmètre modifiée (règle 8).
+
+**Vérifications réelles :**
+- `py_compile` des 2 fichiers → OK ;
+- `pytest tests/test_document_extractor_ocr.py tests/test_documents.py -q` → **8 passed** (2 nouveaux non skippés) ;
+- **suite backend complète → 116 passed / 0 failed (80,2 s)** (114 précédents + 2 nouveaux) ;
+- **preuve live avant/après sur l'API réelle** (backend redémarré — uvicorn **PID 14364** en écoute, `/health` → 200 ;
+  `Start-Process` avait rapporté le PID du lanceur 20912), PNG **contenant du texte** généré en mémoire et envoyé
+  en httpx :
+  - *avant* (ancien code) : `POST /conversations/21/documents` → **HTTP 422** `Document indexing failed.`
+    (document #1 : `statut_indexation="erreur"`) ;
+  - *après* (code corrigé) : `POST /conversations/23/documents` → **HTTP 201**, corps
+    `{"id":3,…,"statut_indexation":"indexe"}` (documents #2 et #3 : `indexe`).
+
+**Découverte complémentaire (explique une partie du rapport initial) :** le PNG 1×1 de
+`backend/scripts/upload_test.py` est **corrompu** (CRC IHDR invalide) → journal backend
+`OSError: broken data stream when reading image file`. Le symptôme « image → 422 » du 23/09 avait donc **deux
+causes** : ce harnais (artefact de diagnostic) **et** le vrai bug de quoting (toute image valide échouait).
+
+**Observations signalées, non corrigées (règle 8) :**
+- message HTTP générique (`Document indexing failed.`) alors que la cause réelle n'existe que dans le journal
+  (`_logger.exception`) → **piste A4** ;
+- `backend/scripts/upload_test.py` embarque toujours son PNG corrompu (correctif de harnais non demandé) ;
+- données créées dans la base de dev par la vérification : utilisateur 6 (`etudiant.test@dexter.dev`),
+  conversations 21/22/23, documents 1-4, + 4 fichiers dans `backend/uploads/` (dossier ignoré par git) —
+  **nettoyage non fait**, à la demande ;
+- au premier appel à froid, la réponse d'upload n'est pas revenue dans la limite de 30 s de l'outil (chargement du
+  modèle d'embedding) → **indice concret pour A2** (freeze à froid), non traité ici.
+
+**Statut : correctif appliqué et vérifié par exécution — VALIDATION UTILISATEUR LE 03/10/2026 (règle 11).**
+Consigne permanente à ce stade : **aucun commit** (commit groupé, à la demande de l'utilisateur) — l'état reste
+`M PROGRESS.md`, `M backend/app/services/document_extractor.py`, `?? backend/tests/test_document_extractor_ocr.py`.
+Suite de la revue actée par l'utilisateur : **CheckPoint 3 = A3 / A4 + décision 4A** (note d'intention à présenter,
+GO à obtenir avant toute édition — règles 1, 4 et 13).
+
+
+### CheckPoint 3 — A3 / A4 + décision 4A — APPLIQUÉ, VÉRIFIÉ ET VALIDÉ PAR L'UTILISATEUR (03/10/2026)
+
+Arbitrage utilisateur (règle 13) : **GO sur le périmètre complet, options recommandées** — A3 par **discriminateur
+explicite** (passeur de contexte React), A4 par **exception typée** (« fichier illisible » distinct d'une erreur
+technique), puis choix du **code HTTP** comme discriminant (422 contenu / 500 serveur).
+
+**Cadrage (constat de départ) :** `A3`/`A4` n'étaient définis nulle part dans ce fichier ; la note d'intention a donc
+été présentée avec l'interprétation retenue (A3 = les 3 ⚠️ frontend de la revue l. 664-666 ; A4 = l'erreur masquée au
+sens de la règle 6, piste déjà tracée en CP2 l. 1669) et validée par l'utilisateur **avant toute édition** (règle 1).
+
+**A3 — état réel prouvé avant correction (règle 2) : deux observations sur trois étaient des faux positifs.**
+- rôle ARIA : le code portait **déjà** `role="menuitem"` (`frontend/src/components/AttachMenu.tsx` l. 33) —
+  `git log -S 'menuitembutton'` → **0 commit** : la chaîne invalide n'a jamais existé sur disque. Elle vient du
+  **document** `PROMPT_COPILOT_CHAT_RICHE.md` l. 101, qui prescrit `role="menuitembutton"` ;
+- accents : le code portait **déjà** « OCR intégré » (`AttachMenu.tsx` l. 82) — `git log -S 'OCR integre'` → **0 commit** ;
+- **double habillage du bloc code : réel, mais plus étroit que décrit.** Sonde `node` sur `react-markdown@10.1.0`
+  (rendu réel des 3 cas) : une clôture ``` **sans langage** produit un `code` aux props **identiques** à celles du
+  code inline (`className === undefined`) **à l'intérieur** d'un `pre` déjà stylé → seule cette configuration cumulait
+  les deux habillages (`bg` + `px-1` du `code` dans le `bg` + `p-4` du `pre`). `className` était donc inexploitable
+  comme discriminant.
+
+**Correctif A3 (1 fichier, `frontend/src/components/ChatMarkdown.tsx`) :** passeur de contexte
+(`InsideCodeBlockContext`) posé par `pre` et lu par `code` → discrimination exacte, sans heuristique ; le `code` d'un
+bloc ne porte plus que `block font-mono text-sm` (le `pre` reste seul propriétaire du visuel) et la classe
+`language-*` est **conservée** pour un futur coloriseur. Aucune dépendance nouvelle (règle 14).
+
+**Correctif A4 (3 fichiers + tests) — un échec serveur n'est plus présenté comme la faute de l'utilisateur :**
+- `backend/app/services/document_extractor.py` : nouvelle exception typée `UnreadableDocumentError` (contenu que
+  l'utilisateur peut corriger) ; extraction éclatée en `_extract_pdf` / `_extract_docx` / `_extract_pptx` /
+  `_extract_image_text`, chacune convertissant **explicitement** ses échecs de contenu (`PyPdfError`,
+  `OSError`/`ValueError`, `zipfile.BadZipFile`, `PackageNotFoundError`, absence de texte) ; `image.load()` force le
+  décodage **avant** l'OCR — c'est là qu'un PNG tronqué échoue (constat de CP2) ; `pytesseract.TesseractError`
+  (moteur ou langue manquants) est **laissé propager** = erreur serveur, jamais « fichier illisible » ;
+- `backend/app/routers/documents.py` : deux branches distinctes — `UnreadableDocumentError` → **422**
+  `"The document content is unreadable."` (`_logger.warning` portant la cause exacte) ; toute autre exception →
+  **500** `"Document indexing failed."` (`_logger.exception`) ; statut `erreur` factorisé dans `_mark_indexing_failed()` ;
+- `frontend/src/pages/Chat.tsx` : 422 → « Le contenu du fichier est illisible (fichier corrompu ou vide). Vérifiez le
+  fichier puis réessayez. », 500 → « L'indexation a échoué côté serveur. Réessayez dans un instant. » ; le `switch`
+  sur le code HTTP reste le **seul** point de décision (aucun couplage par chaîne) ;
+- `backend/tests/test_documents.py` : **3 tests** ajoutés — contenu indécodable → 422 + statut `erreur` relu via
+  l'API ; fichier sans texte → 422 ; échec serveur simulé (`embed_texts` défaillant) → 500.
+
+**Vérifications réelles (aucun « ça devrait marcher ») :**
+- `py_compile` (3 fichiers backend) → **EXIT 0** ;
+- `pytest tests/test_documents.py tests/test_document_extractor_ocr.py -q` → **11 passed** ;
+- **suite backend complète → 119 passed / 0 failed (82,06 s)** (116 de CP2 + 3 nouveaux, aucune régression) ;
+- frontend : `tsc -b` → **EXIT 0** ; `vite build` → **EXIT 0** (354 modules) ;
+- **sonde avant/après du correctif A3** (mêmes 3 cas rendus par `react-markdown`) : fence sans langage
+  `INLINE(bg + px-1) dans BLOC(bg + p-4)` **avant** → `BLOC seul` **après** ; code inline inchangé ; `language-js`
+  conservé ;
+- **preuve live sur l'API réelle** (backend redémarré — launcher PID **18264**, worker en écoute port 8000 PID
+  **23088** ; `/health` → 200) : PNG corrompu → **422** `{"detail":"The document content is unreadable."}` ;
+  TXT sans texte → **422** même message ; TXT valide → **201** `statut_indexation="indexe"` ; statuts relus en base :
+  `ok.txt=indexe`, `vide.txt=erreur`, `corrompu.png=erreur` ; journal serveur portant les causes exactes
+  (« image file cannot be read: cannot identify image file », « does not contain extractable text »).
+
+**Décision 4A :** report **maintenu** — affichage de l'`intention` dans l'UI impossible sans maquette dans
+`documentation/` (règle 3). **Aucun fichier front touché pour 4A.**
+
+**Observations signalées, non corrigées (règle 8) :**
+- le **document** `PROMPT_COPILOT_CHAT_RICHE.md` l. 101 prescrit toujours `role="menuitembutton"` (rôle ARIA
+  inexistant) : c'est le document qui est fautif, pas le code — correctif non demandé ;
+- `status.HTTP_422_UNPROCESSABLE_ENTITY` est **déprécié** par Starlette (avertissement présent dans les journaux :
+  « Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead ») — usage **préexistant**, non modifié ici ;
+- `backend/scripts/upload_test.py` embarque toujours son PNG corrompu (harnais de diagnostic) ;
+- **contrat d'API modifié** : un échec d'indexation *technique* d'upload répond désormais **500** (au lieu de 422) —
+  tout consommateur externe doit en être informé ; seul le frontend du projet consomme cette route et il est à jour ;
+- données créées dans la base de dev par la preuve live : utilisateur **7** (`a4-live-d7b699b4@dexter.dev`),
+  conversation **24**, documents 5-7, fichiers dans `backend/uploads/` → **nettoyage non fait**, à la demande
+  (s'ajoute à la liste CP2 : utilisateur 6, conversations 21/22/23, documents 1-4).
+
+**Statut : correctifs appliqués et vérifiés par exécution — VALIDATION UTILISATEUR LE 03/10/2026 (règle 11)** ;
+l'observation « nettoyage non fait, à la demande » a été traitée le même jour (voir la section suivante).
+Périmètre git touché (aucun commit, consigne maintenue) : `PROGRESS.md`, `backend/app/routers/documents.py`,
+`backend/app/services/document_extractor.py`, `backend/tests/test_documents.py`,
+`frontend/src/components/ChatMarkdown.tsx`, `frontend/src/pages/Chat.tsx`,
+`?? backend/tests/test_document_extractor_ocr.py`.
+Prochaine étape de l'ordre arbitré : **features différées (C) / V1** (l. 1613), ou le **checkpoint 1-bis**.
+
+### Nettoyage de la base de dev et des uploads — 03/10/2026 (demande explicite de l'utilisateur, règle 1)
+
+**Périmètre demandé** : « Nettoie la base ». Inventaire **avant** action (lecture seule) sur PostgreSQL `dexter`
+(conteneur Docker `dexterchatai-postgres-1`, image `pgvector/pgvector:pg16`) : la base ne contenait **que des
+artefacts de harnais** — utilisateurs `live-*@test.com` (ids 1-5, harnais de stream du 02/10),
+`etudiant.test@dexter.dev` (id 6, preuve live CP2), `a4-live-d7b699b4@dexter.dev` (id 7, preuve live CP3) ;
+25 conversations (ids 1-25), 44 messages, 7 documents (`erreur` / `indexe`), 3 chunks ; **0** classe, **0** membre,
+**0** quiz, **0** référentiel. Aucun compte ni contenu réel → périmètre de nettoyage retenu : **toutes les données**,
+**schéma exclu**.
+
+**Filet de sécurité** : `pg_dump` complet **avant** l'effacement →
+`%TEMP%\dexter_dev_backup_avant_nettoyage.sql` (109 124 octets, copié depuis le conteneur puis vérifié sur disque ;
+restauration possible par `psql -f`).
+
+**Action** : `TRUNCATE TABLE document_chunks, documents, messages, conversations, quiz_attempts, classe_membres,
+classes, user_domain_referentiels, users RESTART IDENTITY CASCADE;` (données seules, séquences remises à 1) ; puis
+suppression des **99 fichiers** de `backend/uploads/` (7,05 Mo : 87 `.txt`, 11 `.png`, 1 `.jpg`), **dossier
+conservé** (requis par `settings.upload_dir`).
+
+**Vérifications réelles (exécutées, jamais « ça devrait marcher »)** :
+- comptages après nettoyage : `users=0`, `conversations=0`, `messages=0`, `documents=0`, `document_chunks=0`,
+  `classes=0`, `classe_membres=0`, `quiz_attempts=0`, `user_domain_referentiels=0` ;
+- schéma intact : `\dt` → **les 10 tables** toujours présentes ; `alembic_version = 202409060000` **inchangé** ;
+- `backend/uploads/` → **0 fichier**, `Test-Path backend\uploads` → **True** ;
+- backend toujours en service après l'opération (uvicorn **PID 23088** en écoute sur `:8000`) →
+  `GET /health` → **200 `{"status":"ok"}`**.
+
+**Conséquence tracée** : l'observation CP2/CP3 « nettoyage non fait, à la demande » est **CLOSE**. Restent ouverts et
+inchangés à ce stade (règle 8) : PNG corrompu du harnais `backend/scripts/upload_test.py`, latence à froid (indice
+**A2**, tracé l. 785-790), `status.HTTP_422_UNPROCESSABLE_ENTITY` déprécié par Starlette,
+`role="menuitembutton"` prescrit par `PROMPT_COPILOT_CHAT_RICHE.md` l. 101, et le **checkpoint 1-bis** (6 statuts
+historiques « VALIDATION UTILISATEUR EN ATTENTE »).
+
+**Statut : nettoyage exécuté et vérifié (règles 4 et 9) — reprise des correctifs demandée par l'utilisateur le
+03/10/2026 ; prochaine correction à arbitrer avec lui avant toute édition (règles 1 et 13).**

@@ -123,3 +123,53 @@ def test_professor_can_share_document(monkeypatch):
     body = response.json()
     assert body["visibilite"] == "partage_classe"
     assert body["id"] == document_id
+
+
+def test_upload_document_with_undecodable_content_returns_422(monkeypatch):
+    """A file the extractor cannot decode is a client problem, not a server failure."""
+    _patch_indexing_dependencies(monkeypatch)
+    headers = _auth_headers()
+    conversation_id = _conversation(headers)
+    response = client.post(
+        f"/conversations/{conversation_id}/documents",
+        headers=headers,
+        files={"file": ("corrompu.png", b"garbage-bytes-not-an-image", "image/png")},
+    )
+    assert response.status_code == 422, response.text
+    assert response.json()["detail"] == "The document content is unreadable."
+    listed = client.get(f"/conversations/{conversation_id}/documents", headers=headers)
+    assert listed.status_code == 200, listed.text
+    assert [document["statut_indexation"] for document in listed.json()] == ["erreur"]
+
+
+def test_upload_document_without_extractable_text_returns_422(monkeypatch):
+    """A file that yields no text is reported through the same client error."""
+    _patch_indexing_dependencies(monkeypatch)
+    headers = _auth_headers()
+    conversation_id = _conversation(headers)
+    response = client.post(
+        f"/conversations/{conversation_id}/documents",
+        headers=headers,
+        files={"file": ("vide.txt", b"   \n\n  ", "text/plain")},
+    )
+    assert response.status_code == 422, response.text
+    assert response.json()["detail"] == "The document content is unreadable."
+
+
+def test_upload_document_server_failure_returns_500(monkeypatch):
+    """A server-side indexing failure must not be answered as the user's fault."""
+    _patch_indexing_dependencies(monkeypatch)
+
+    def failing_embed_texts(texts):
+        raise RuntimeError("embedding model unavailable")
+
+    monkeypatch.setattr("app.services.rag_service.embed_texts", failing_embed_texts)
+    headers = _auth_headers()
+    conversation_id = _conversation(headers)
+    response = client.post(
+        f"/conversations/{conversation_id}/documents",
+        headers=headers,
+        files={"file": ("lesson.txt", b"Balance sheet", "text/plain")},
+    )
+    assert response.status_code == 500, response.text
+    assert response.json()["detail"] == "Document indexing failed."

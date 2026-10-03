@@ -173,7 +173,9 @@ export default function Chat() {
       case 400:
         return 'Type de fichier non supporté (pdf, docx, pptx, png, jpg, jpeg, txt, md).'
       case 422:
-        return 'L\'indexation du document a échoué.'
+        return 'Le contenu du fichier est illisible (fichier corrompu ou vide). Vérifiez le fichier puis réessayez.'
+      case 500:
+        return 'L’indexation a échoué côté serveur. Réessayez dans un instant.'
       case 404:
         return 'Conversation introuvable.'
       case 403:

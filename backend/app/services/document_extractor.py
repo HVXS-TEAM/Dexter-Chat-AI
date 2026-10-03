@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import os
+import zipfile
 from io import BytesIO
 from pathlib import Path
 
@@ -10,8 +12,22 @@ from app.config import settings
 _OCR_READY = False
 
 
+class UnreadableDocumentError(Exception):
+    """The uploaded file cannot be turned into text.
+
+    Raised for content-level failures the user can act on (corrupt or truncated
+    file, document without extractable text). Server-side failures (missing OCR
+    engine, unavailable embedding model, unexpected bug) must never use this
+    class: the upload endpoint reports them as a server error instead of
+    presenting them as the user's fault.
+    """
+
+
 def _configure_tesseract() -> None:
     """Point pytesseract at the OCR engine, once per process.
+
+    The language data directory is exported through ``TESSDATA_PREFIX``
+    (see the comment below) instead of the ``--tessdata-dir`` option.
 
     Raises ``ValueError`` with an explicit message when the engine is missing:
     an unreadable image must never be reported as an anonymous failure.
@@ -24,6 +40,14 @@ def _configure_tesseract() -> None:
 
     if settings.tesseract_cmd:
         pytesseract.pytesseract.tesseract_cmd = settings.tesseract_cmd
+    if settings.tessdata_dir:
+        # Tesseract reads its language data location from TESSDATA_PREFIX.
+        # The ``--tessdata-dir`` command-line option cannot be used here: on
+        # Windows pytesseract splits the option string with
+        # ``shlex.split(config, posix=False)``, which keeps the quotes and
+        # makes Tesseract fail with
+        # 'Error opening data file "<dir>"/fra.traineddata'.
+        os.environ["TESSDATA_PREFIX"] = settings.tessdata_dir
     try:
         pytesseract.get_tesseract_version()
     except Exception as exc:
@@ -34,15 +58,73 @@ def _configure_tesseract() -> None:
     _OCR_READY = True
 
 
-def _ocr_arguments() -> str:
-    """Return the extra tesseract arguments (language data directory)."""
-    if settings.tessdata_dir:
-        return f'--tessdata-dir "{settings.tessdata_dir}"'
-    return ""
+def _extract_pdf(file_bytes: bytes) -> str:
+    """Read the text layer of a PDF, or fail explicitly on an unreadable file."""
+    from PyPDF2 import PdfReader
+    from PyPDF2.errors import PyPdfError
+
+    try:
+        reader = PdfReader(BytesIO(file_bytes))
+        return "\n\n".join(page.extract_text() or "" for page in reader.pages)
+    except (PyPdfError, OSError, ValueError) as exc:
+        raise UnreadableDocumentError(f"The PDF file cannot be read: {exc}") from exc
+
+
+def _extract_docx(file_bytes: bytes) -> str:
+    """Read paragraphs and tables of a DOCX, or fail explicitly on an unreadable file."""
+    from docx import Document as DocxDocument
+    from docx.opc.exceptions import PackageNotFoundError
+
+    try:
+        document = DocxDocument(BytesIO(file_bytes))
+        paragraphs = [paragraph.text for paragraph in document.paragraphs]
+        paragraphs.extend(" | ".join(cell.text for cell in row.cells) for table in document.tables for row in table.rows)
+        return "\n\n".join(paragraphs)
+    except (PackageNotFoundError, zipfile.BadZipFile) as exc:
+        raise UnreadableDocumentError(f"The DOCX file cannot be read: {exc}") from exc
+
+
+def _extract_pptx(file_bytes: bytes) -> str:
+    """Read the text of every slide of a PPTX, or fail explicitly on an unreadable file."""
+    from pptx import Presentation
+    from pptx.exc import PackageNotFoundError
+
+    try:
+        presentation = Presentation(BytesIO(file_bytes))
+        slides = []
+        for slide in presentation.slides:
+            slides.append("\n".join(shape.text for shape in slide.shapes if hasattr(shape, "text")))
+        return "\n\n".join(slides)
+    except (PackageNotFoundError, zipfile.BadZipFile) as exc:
+        raise UnreadableDocumentError(f"The PPTX file cannot be read: {exc}") from exc
+
+
+def _extract_image_text(file_bytes: bytes) -> str:
+    """OCR an image. A decoding failure means "unreadable file"; an OCR engine failure does not."""
+    import pytesseract
+    from PIL import Image
+
+    _configure_tesseract()
+    try:
+        image = Image.open(BytesIO(file_bytes))
+        # Decode at once: a truncated or corrupt image only fails here, never during
+        # OCR. PIL signals undecodable data with UnidentifiedImageError, a subclass
+        # of OSError, so a single OSError handler covers every decoding failure.
+        image.load()
+    except OSError as exc:
+        raise UnreadableDocumentError(f"The image file cannot be read: {exc}") from exc
+    # pytesseract.TesseractError is a server-side problem: it is deliberately left
+    # to propagate so the endpoint answers with a server error.
+    return pytesseract.image_to_string(image, lang=settings.ocr_lang)
 
 
 def extract_text(filename: str, file_bytes: bytes) -> str:
-    """Extract plain text from PDF, DOCX, PPTX, images, TXT, or MD."""
+    """Extract plain text from PDF, DOCX, PPTX, images, TXT, or MD.
+
+    Failures caused by the uploaded content raise ``UnreadableDocumentError`` so the
+    caller can answer with a client error; failures caused by the server environment
+    keep their own exception type and are reported as server errors.
+    """
     suffix = Path(filename).suffix.lower()
     if suffix in {".txt", ".md"}:
         try:
@@ -50,40 +132,17 @@ def extract_text(filename: str, file_bytes: bytes) -> str:
         except UnicodeDecodeError:
             text = file_bytes.decode("latin-1")
     elif suffix == ".pdf":
-        from PyPDF2 import PdfReader
-
-        reader = PdfReader(BytesIO(file_bytes))
-        text = "\n\n".join(page.extract_text() or "" for page in reader.pages)
+        text = _extract_pdf(file_bytes)
     elif suffix == ".docx":
-        from docx import Document as DocxDocument
-
-        document = DocxDocument(BytesIO(file_bytes))
-        paragraphs = [paragraph.text for paragraph in document.paragraphs]
-        paragraphs.extend(" | ".join(cell.text for cell in row.cells) for table in document.tables for row in table.rows)
-        text = "\n\n".join(paragraphs)
+        text = _extract_docx(file_bytes)
     elif suffix == ".pptx":
-        from pptx import Presentation
-
-        presentation = Presentation(BytesIO(file_bytes))
-        slides = []
-        for slide in presentation.slides:
-            slides.append("\n".join(shape.text for shape in slide.shapes if hasattr(shape, "text")))
-        text = "\n\n".join(slides)
+        text = _extract_pptx(file_bytes)
     elif suffix in {".png", ".jpg", ".jpeg"}:
-        from PIL import Image
-
-        import pytesseract
-
-        _configure_tesseract()
-        text = pytesseract.image_to_string(
-            Image.open(BytesIO(file_bytes)),
-            lang=settings.ocr_lang,
-            config=_ocr_arguments(),
-        )
+        text = _extract_image_text(file_bytes)
     else:
         raise ValueError(f"Unsupported document type: {suffix or 'unknown'}")
 
     cleaned = text.strip()
     if not cleaned:
-        raise ValueError("The document does not contain extractable text.")
+        raise UnreadableDocumentError("The document does not contain extractable text.")
     return cleaned

@@ -17,6 +17,7 @@ from app.models.document import Document
 from app.models.user import User
 from app.schemas.document import DocumentIndexStatus, DocumentRead, DocumentVisibilityUpdate
 from app.services.conversations import get_conversation
+from app.services.document_extractor import UnreadableDocumentError
 from app.services.rag_service import index_document
 
 router = APIRouter(tags=["documents"])
@@ -35,6 +36,13 @@ def _upload_root() -> Path:
 def _get_owned_document(db: Session, document_id: int, user_id: int) -> Document | None:
     """Return a document only when it belongs to the user."""
     return db.query(Document).filter(Document.id == document_id, Document.owner_id == user_id).first()
+
+
+def _mark_indexing_failed(db: Session, document: Document) -> None:
+    """Persist the failed indexing status so the UI can display it."""
+    document.statut_indexation = "erreur"
+    db.add(document)
+    db.commit()
 
 
 @router.post(
@@ -71,15 +79,29 @@ def upload_document(
     db.refresh(document)
     try:
         return index_document(db, document, file_bytes)
+    except UnreadableDocumentError as exc:
+        # Content problem the user can act on: the precise cause goes to the log, the
+        # response stays short and never exposes the server environment.
+        _logger.warning(
+            "Unreadable document content for document id=%s (%s): %s",
+            document.id,
+            document.titre,
+            exc,
+        )
+        _mark_indexing_failed(db, document)
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail="The document content is unreadable.",
+        ) from exc
     except Exception as exc:
+        # Server-side failure: it must not be answered as the user's fault, hence 500.
         _logger.exception(
             "Document indexing failed for document id=%s (%s)", document.id, document.titre
         )
-        document.statut_indexation = "erreur"
-        db.add(document)
-        db.commit()
+        _mark_indexing_failed(db, document)
         raise HTTPException(
-            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Document indexing failed."
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Document indexing failed.",
         ) from exc
 
 
