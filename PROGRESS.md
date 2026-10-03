@@ -2003,4 +2003,64 @@ ci-dessous).**
 Périmètre git touché, commité : `M backend/app/services/rag_service.py`,
 `+ backend/app/services/image_summary.py`, `+ backend/tests/test_image_summary.py` (+ la présente section de
 `PROGRESS.md`, cumulée aux lots 2 et 2-bis commités ensemble).
-Prochaine étape de l'ordre acté : **checkpoint 1-bis** (6 statuts d'indexation).
+Prochaine étape de l'ordre acté : **checkpoint 1-bis** (6 statuts soldés ci-dessous — plus rien en attente).
+
+### Checkpoint 1-bis — clôture des 6 statuts historiques — 03/10/2026 (arbitrage utilisateur, règles 1, 11 et 13)
+
+**Note d'intention (règle 4)** : ce qu'on devait faire — arbitrer les 6 statuts « VALIDATION UTILISATEUR EN
+ATTENTE » historiques repérés au CheckPoint 1 ; ce qui a été fait concrètement — **lecture seule, aucun code
+touché**, chaque statut est rattaché ci-dessous à sa couverture postérieure réelle, sans inventer aucune validation ;
+ce que ça change — les 6 passent à « soldé », la route reprend à l'item suivant de l'ordre
+(`HTTP_422_UNPROCESSABLE_ENTITY` déprécié). **Dépendances (règle 14) : sans objet** (aucune installation, aucune
+modification de code).
+
+**Rapport de conformité (statut par statut, numéros de ligne actuels de ce fichier)** :
+1. **l. 881** (signalement n° 2, calcul déterministe dans le stream — contrôle visuel du stream demandé) : jamais
+   validé formellement comme contrôle visuel ; **couvert fonctionnellement** par la suite — cycle 3 (options A+B),
+   cycles 4/5 et CP2/CP3 verrouillent le même contrat SSE (`meta`, branche calcul, clarifications persistées), et le
+   harnais live 18/18 (l. 1321-1328) rejoue les cas TVA/crédit/général demandés → **soldé par ta décision de ce jour**.
+2. **l. 951** (5 points : lanceurs, `meta` non-calcul, contrôle visuel TVA/crédit/général/TVA sans taux) : même
+   couverture — le harnais 18/18 rejoue exactement ces 4 cas, validé l. 1341-1347 → **soldé par ta décision de ce jour**.
+3. **l. 1038** (correctifs 1-2 ; signalements 1/4/5 ouverts) : signalement 1 (classifieur TVA instable) **arbitré au
+   cycle 3** (A+B, l. 1044-1066, vérifié 102 passed + live) ; signalement 4 (parité des clarifications) **tranché au
+   cycle 4** (persistance, validé l. 1279-1284) ; signalement 5 (rédacteur externe) **traité** (décision 3C+A, commit
+   de référence `9fe5374`, l. 1356-1359) → **soldé**.
+4. **l. 1235** (correctifs 3, 4 et 5) : **validé explicitement l. 1279-1284** (« correctifs 3, 4 et 5 acceptés »,
+   110 passed / 0 failed) → **soldé**.
+5. **l. 1271** (parité par persistance + option C) : **validé explicitement l. 1279-1284** (les mêmes deux items sont
+   nommément acceptés) → **soldé**.
+6. **l. 1337** (remise en route live, harnais 18/18) : **validée explicitement l. 1341-1347** (étapes 1 à 3, signalement
+   15 clos) → **soldé**.
+
+**Limite énoncée plainement (règle 6)** : les contrôles *visuels* demandés aux l. 881/951 n'ont jamais été exécutés
+formellement comme tels dans la trace ; leur clôture repose sur la couverture fonctionnelle citée + **ta décision
+explicite de ce jour** (« solder les 6 »), pas sur une validation visuelle inventée.
+
+**Statut : checkpoint 1-bis CLÔTURÉ — VALIDÉ PAR L'UTILISATEUR (03/10/2026).**
+Périmètre git touché, non commité : `M PROGRESS.md` (la présente section seule).
+Prochaine étape de l'ordre acté : **`status.HTTP_422_UNPROCESSABLE_ENTITY` déprécié par Starlette**.
+
+### Étape 3 de l'ordre — `HTTP_422_UNPROCESSABLE_ENTITY` déprécié — 03/10/2026 (ordre acté l. 1801, règles 1, 5 et 8)
+
+**Note d'intention (règle 4)** : ce qu'on devait faire — éliminer l'avertissement Starlette
+« Use 'HTTP_422_UNPROCESSABLE_CONTENT' instead » constaté dans les journaux ; ce qui a été fait concrètement —
+**une seule constante renommée** dans `backend/app/routers/documents.py` l. 93
+(`HTTP_422_UNPROCESSABLE_ENTITY` → `HTTP_422_UNPROCESSABLE_CONTENT`), seul fichier produit touché ; ce que ça change —
+le code reste **identique en comportement** (les deux constantes valent `422`, vérifié dans le venv : starlette 1.6.0),
+seul l'avertissement de dépréciation disparaît. **Dépendances (règle 14) : sans objet** (aucune installation).
+
+**Preuves par exécution (aucune supposition)** :
+- Avant : `from starlette import status; status.HTTP_422_UNPROCESSABLE_ENTITY` → `422` **+ `StarletteDeprecationWarning`** ;
+  après : constante `HTTP_422_UNPROCESSABLE_CONTENT` → `422`, **import du routeur sans avertissement** (`-W error`, OK) ;
+- `py_compile` OK ; périmètre voisin (`test_documents.py` + `test_document_extractor_ocr.py` + `test_image_summary.py`) →
+  **14 passed en 15,15 s** (les tests assertent le **code numérique 422**, inchangé — aucun test ne référence le nom de
+  la constante) ; les 3 warnings restants sont hérités (slowapi `asyncio.iscoroutinefunction`, `httpx`/`starlette.testclient`,
+  non concernés) ;
+- Recherche `UNPROCESSABLE_ENTITY` dans le code : **0 occurrence restante** (seules les mentions historiques de
+  `PROGRESS.md` subsistent, volontairement non réécrites — traçabilité) ;
+- 6 fichiers ré-écrits dans `backend/uploads/` par la suite (cause connue `conftest.py` n'isole pas `UPLOAD_DIR`) →
+  **nettoyés, 0 fichier**.
+
+**Statut : étape 3 appliquée et vérifiée par exécution — VALIDATION UTILISATEUR EN ATTENTE (règle 11).**
+Périmètre git touché, non commité : `M backend/app/routers/documents.py` (1 ligne) (+ la présente section de `PROGRESS.md`).
+Prochaine étape de l'ordre acté : **document `PROMPT_COPILOT_CHAT_RICHE.md` l. 101** (`role="menuitembutton"` inexistant).
