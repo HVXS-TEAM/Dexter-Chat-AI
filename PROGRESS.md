@@ -1675,8 +1675,9 @@ causes** : ce harnais (artefact de diagnostic) **et** le vrai bug de quoting (to
   modèle d'embedding) → **indice concret pour A2** (freeze à froid), non traité ici.
 
 **Statut : correctif appliqué et vérifié par exécution — VALIDATION UTILISATEUR LE 03/10/2026 (règle 11).**
-Consigne permanente à ce stade : **aucun commit** (commit groupé, à la demande de l'utilisateur) — l'état reste
-`M PROGRESS.md`, `M backend/app/services/document_extractor.py`, `?? backend/tests/test_document_extractor_ocr.py`.
+Consigne à ce stade : **commit groupé, à la demande de l'utilisateur** — l'état n'était alors pas commité
+(`M PROGRESS.md`, `M backend/app/services/document_extractor.py`, `?? backend/tests/test_document_extractor_ocr.py`) ;
+le commit groupé a été effectué le **03/10/2026** → `b6418d6` (voir « Commit de clôture » en fin de fichier).
 Suite de la revue actée par l'utilisateur : **CheckPoint 3 = A3 / A4 + décision 4A** (note d'intention à présenter,
 GO à obtenir avant toute édition — règles 1, 4 et 13).
 
@@ -1754,10 +1755,11 @@ bloc ne porte plus que `block font-mono text-sm` (le `pre` reste seul propriéta
 
 **Statut : correctifs appliqués et vérifiés par exécution — VALIDATION UTILISATEUR LE 03/10/2026 (règle 11)** ;
 l'observation « nettoyage non fait, à la demande » a été traitée le même jour (voir la section suivante).
-Périmètre git touché (aucun commit, consigne maintenue) : `PROGRESS.md`, `backend/app/routers/documents.py`,
-`backend/app/services/document_extractor.py`, `backend/tests/test_documents.py`,
+Périmètre git touché, **commité le 03/10/2026 → `b6418d6`** (7 fichiers, aucun push) : `PROGRESS.md`,
+`backend/app/routers/documents.py`, `backend/app/services/document_extractor.py`, `backend/tests/test_documents.py`,
 `frontend/src/components/ChatMarkdown.tsx`, `frontend/src/pages/Chat.tsx`,
-`?? backend/tests/test_document_extractor_ocr.py`.
+`?? backend/tests/test_document_extractor_ocr.py`. La mention antérieure « aucun commit, consigne maintenue » n'était
+vraie qu'avant cette date.
 Prochaine étape de l'ordre arbitré : **features différées (C) / V1** (l. 1613), ou le **checkpoint 1-bis**.
 
 ### Nettoyage de la base de dev et des uploads — 03/10/2026 (demande explicite de l'utilisateur, règle 1)
@@ -1793,5 +1795,36 @@ inchangés à ce stade (règle 8) : PNG corrompu du harnais `backend/scripts/upl
 `role="menuitembutton"` prescrit par `PROMPT_COPILOT_CHAT_RICHE.md` l. 101, et le **checkpoint 1-bis** (6 statuts
 historiques « VALIDATION UTILISATEUR EN ATTENTE »).
 
-**Statut : nettoyage exécuté et vérifié (règles 4 et 9) — reprise des correctifs demandée par l'utilisateur le
-03/10/2026 ; prochaine correction à arbitrer avec lui avant toute édition (règles 1 et 13).**
+**Statut : nettoyage exécuté et vérifié (règles 4 et 9) — CP1-CP3 et nettoyage commités le 03/10/2026 (`b6418d6`,
+non poussé). Ordre de reprise des correctifs **acté par l'utilisateur** (« on part en ordre », 03/10/2026) :
+**étape 1 = A2 (gel à froid)**, puis harnais `backend/scripts/upload_test.py`, checkpoint 1-bis,
+`HTTP_422_UNPROCESSABLE_ENTITY` déprécié, document `PROMPT_COPILOT_CHAT_RICHE.md` l. 101.**
+
+### Commit de clôture des checkpoints 1-3 + nettoyage — 03/10/2026 (demande explicite de l'utilisateur, règle 1)
+
+**Demande** : « Commit d'abord réellement l'état, ensuite on verra quoi faire », puis « on part en ordre ».
+
+**Commit effectué** : `b6418d6` — « Checkpoints de revue 1-3: tracabilite, OCR des images (A1), discrimination du bloc
+code (A3), erreurs d'upload 422/500 (A4) et nettoyage de la base de dev » — branche `main`, **7 fichiers,
+504 insertions, 51 suppressions** : `PROGRESS.md`, `backend/app/routers/documents.py`,
+`backend/app/services/document_extractor.py`, `backend/tests/test_documents.py`,
+`backend/tests/test_document_extractor_ocr.py` (nouveau), `frontend/src/components/ChatMarkdown.tsx`,
+`frontend/src/pages/Chat.tsx`. Message au format des commits existants (`Cycle N: ...`, sans accents).
+
+**Contrôles avant commit** : `git status --porcelain -uall` → **exactement** les 7 fichiers attendus, aucun artefact
+parasite ; `.env` ignoré (`git check-ignore -v` → `.gitignore:5:*.env`) ; recherche de secrets dans le diff (`gsk_`,
+`csk-`, `dev-secret-dexter`, `Etudiant2026`) → **aucune occurrence** ; aucun hook `pre-commit` actif ; `git add` **par
+chemins explicites** (jamais `git add -A`, règle 8).
+
+**Vérifications après commit (exécutées)** :
+- `git status --short` → **vide** (arbre de travail propre) ;
+- `git log --oneline -3` → `b6418d6` en tête, au-dessus de `4d79f18` (cycle 8) ;
+- `git rev-list --count origin/main..HEAD` → **1** → commit **local, non poussé** (règle 11) ;
+- tests ciblés rejoués **sur l'état commité** : `pytest tests/test_documents.py tests/test_document_extractor_ocr.py -q`
+  → **11 passed** (11,55 s) ; l'avertissement Starlette de dépréciation a été **reproduit par exécution** (preuve
+  concrète à l'appui de la correction n° 4 de l'ordre).
+
+**Conséquence tracée** : les mentions « aucun commit, consigne maintenue » (l. 1678-1679 et l. 1757 de l'état
+antérieur) sont **corrigées** ci-dessus ; elles n'étaient vraies qu'avant le 03/10/2026. Un fichier ne pouvant pas
+citer son propre hash, le hash du **présent** commit de traçabilité reste lisible dans `git log` — même convention que
+les cycles 7 et 8 (l. 1551/1605).
